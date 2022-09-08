@@ -1,6 +1,6 @@
 
-![0 5](https://user-images.githubusercontent.com/50097749/189153476-2a7e7122-920b-49fe-a7f2-90167a3c662a.png)
 
+![0 5](https://user-images.githubusercontent.com/50097749/189155568-77031782-8413-4e4d-ba4c-f6bdf18b18c4.png)
 
 ----------------------------  
 
@@ -19,14 +19,13 @@ selain->palvelin: GET https://studies.cs.helsinki.fi/exampleapp/spa/main.js
 palvelin->selain: main.js
 
 note left of selain:
-Javascript pyytää data.json tiedoston, mutta ilman POST käskyä formissa
+Javascript pyytää data.json tiedoston
 end notes
 
 selain->palvelin: GET https://studies.cs.helsinki.fi/exampleapp/spa/data.json
 
 palvelin->selain: JSON tiedosto
 note left of selain:
-Palvelin ei käske sivustoa piirtymään uudestaan, koska formissa ei ollut POST käskyä.
 Selaimen Javascript havaitsee JSON tiedoston saapuneen ja piirtää muistiinpanot.
 end notes
 
