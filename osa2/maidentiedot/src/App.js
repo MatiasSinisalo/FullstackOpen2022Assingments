@@ -35,7 +35,7 @@ const Country = ({country}) => {
 const Countries = ({countries, filter}) => {
   const filteredCountries = countries.filter(country => country.name.common.toLowerCase().includes(filter.toLowerCase()))
   //console.log(filteredCountries)
-  if(filteredCountries.length < 11)
+  if(filteredCountries.length == 1)
   {
   return (
     <>
