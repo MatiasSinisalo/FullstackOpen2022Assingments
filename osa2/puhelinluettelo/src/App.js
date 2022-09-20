@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import personService from './services/persons'
 
-const Person = ({person}) =>{
+const Person = ({person, deleteFunction}) =>{
   return (
     <>
-      <p>{person.name} {person.number}</p>
+      <p>{person.name} {person.number} <button value = {person.id} onClick={deleteFunction}>delete</button></p>
     </>
   )
 }
@@ -41,11 +41,11 @@ const Form = ({formVariables, addPerson}) =>{
 }
 
 
-const Persons = ({persons, filter}) =>{
+const Persons = ({persons, filter, deleteFunction}) =>{
   const filteredPersons = persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()))
    return (
     <>
-      {filteredPersons.map(person => <Person key={person.name} person={person}/>)}
+      {filteredPersons.map(person => <Person key={person.id} person={person} deleteFunction={deleteFunction}/>)}
     </>
   )
 }
@@ -74,12 +74,34 @@ const App = () => {
     else if(!persons.some(person => person.name === newName))
     {
       const newPerson = {name: newName, number: newPhoneNumber}
-      personService.create(newPerson)
-      setPersons(persons.concat(newPerson))
+      const response = personService.create(newPerson)
+      response.then(justAddedPerson => setPersons(persons.concat(justAddedPerson)))
     }
     else
     {
-      alert(`${newName} is already added to phonebook`)   
+      const shouldReplaceNumber = window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)   
+      if(shouldReplaceNumber){
+      
+        const personToModify = persons.find(person => person.name === newName)
+        const changedPerson = {...personToModify, number : newPhoneNumber}
+       
+        const response = personService.modifyi(changedPerson.id, changedPerson)
+        response.then(returnedPerson => {
+          setPersons(persons.map(person => person.id !== changedPerson.id ? person : returnedPerson))
+        })
+      }
+
+    }
+  }
+
+  const deletePerson = (event) =>{
+    const personToDelete = persons.find(person => person.id == event.target.value)
+    const shouldDelete = window.confirm(`Delete ${personToDelete.name}?`)
+    if(shouldDelete)
+    {
+      personService.destroy(personToDelete.id)
+      setPersons(persons.filter(person => person.id !== personToDelete.id))
+    
     }
   }
 
@@ -121,7 +143,7 @@ const App = () => {
       <h3>Add a new</h3>
       <Form formVariables = {formVariables} addPerson = {addPerson}/>
       <h2>Numbers</h2>
-      <Persons persons={persons} filter={filter}/>
+      <Persons persons={persons} filter={filter} deleteFunction={deletePerson}/>
     </div>
   )
 
