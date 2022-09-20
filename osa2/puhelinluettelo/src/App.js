@@ -1,10 +1,10 @@
-import { useState } from 'react'
-
+import { useEffect, useState } from 'react'
+import axios from 'axios'
 
 const Person = ({person}) =>{
   return (
     <>
-      <p>{person.name} {person.phoneNumber}</p>
+      <p>{person.name} {person.number}</p>
     </>
   )
 }
@@ -53,12 +53,18 @@ const Persons = ({persons, filter}) =>{
 
 const App = () => {
 
-  const [persons, setPersons] = useState([
-    { 
-      name: 'Arto Hellas',
-      phoneNumber: '000 000 0000'
-    }
-  ])
+ 
+
+  const [persons, setPersons] = useState([])
+
+  const personsRequest = () => {
+    axios.get('http://localhost:3001/persons')
+    .then(response => {
+      setPersons(response.data)
+    })
+  }
+  useEffect(personsRequest, [])
+
 
   const [newName, setNewName] = useState('')
   const [newPhoneNumber, setPhoneNumber] = useState('')
