@@ -50,6 +50,14 @@ const Persons = ({persons, filter, deleteFunction}) =>{
   )
 }
 
+const Notification = ({notification}) =>{
+
+  return (
+    <div className={notification.style}>
+      {notification.message}
+    </div>
+  )
+}
 
 const App = () => {
 
@@ -65,6 +73,9 @@ const App = () => {
   const [newPhoneNumber, setPhoneNumber] = useState('')
   const [filter, setFilter] = useState('')
 
+  const [notification, setNotification] = useState({style : '', message: ''})
+
+
   const addPerson = (event) =>{
     event.preventDefault()
     
@@ -73,9 +84,27 @@ const App = () => {
     }
     else if(!persons.some(person => person.name === newName))
     {
-      const newPerson = {name: newName, number: newPhoneNumber}
-      const response = personService.create(newPerson)
-      response.then(justAddedPerson => setPersons(persons.concat(justAddedPerson)))
+      personService.getAll().then(updatedPersons => {
+          if(!updatedPersons.some(person => person.name === newName)){
+            const newPerson = {name: newName, number: newPhoneNumber}
+            const response = personService.create(newPerson)
+            response.then(justAddedPerson => {
+              setPersons(persons.concat(justAddedPerson))
+              setNotification({style: 'success', message: `Added ${justAddedPerson.name}`})
+              setTimeout(() => {
+                setNotification({style: '', message: ``})
+              }, 5000);
+            })
+          }
+          else{
+            setPersons(updatedPersons)
+            setNotification({style: 'error', message: `${newName} was already in the database`})
+              setTimeout(() => {
+                setNotification({style: '', message: ``})
+              }, 5000);
+          }
+        }
+      )  
     }
     else
     {
@@ -84,11 +113,22 @@ const App = () => {
       
         const personToModify = persons.find(person => person.name === newName)
         const changedPerson = {...personToModify, number : newPhoneNumber}
-       
         const response = personService.modifyi(changedPerson.id, changedPerson)
         response.then(returnedPerson => {
           setPersons(persons.map(person => person.id !== changedPerson.id ? person : returnedPerson))
+          setNotification({style: 'success', message: `Modified ${returnedPerson.name} number to ${returnedPerson.number}`})
+          setTimeout(() => {
+            setNotification({style: '', message: ``})
+          }, 5000);
         })
+        .catch(error => {
+          setPersons(persons.filter(person => person.id !== personToModify.id))
+          setNotification({style: 'error', message: `${personToModify.name} was already removed from server`})
+          setTimeout(() => {
+            setNotification({style: '', message: ``})
+          }, 5000);
+        })
+        
       }
 
     }
@@ -99,9 +139,26 @@ const App = () => {
     const shouldDelete = window.confirm(`Delete ${personToDelete.name}?`)
     if(shouldDelete)
     {
-      personService.destroy(personToDelete.id)
-      setPersons(persons.filter(person => person.id !== personToDelete.id))
+      const response = personService.destroy(personToDelete.id)
+      response.then(removedPerson => {
+        console.log(removedPerson)
+        setPersons(persons.filter(person => person.id !== personToDelete.id))
+        setNotification({style: 'success', message: `Removed ${personToDelete.name}`})
+        setTimeout(() => {
+          setNotification({style: '', message: ``})
+        }, 5000);
     
+      })
+      .catch(error => {
+        setPersons(persons.filter(person => person.id !== personToDelete.id))
+        setNotification({style: 'error', message: `${personToDelete.name} was already removed from server`})
+        setTimeout(() => {
+          setNotification({style: '', message: ``})
+        }, 5000);
+  
+      }
+      )
+      
     }
   }
 
@@ -138,6 +195,7 @@ const App = () => {
  
   return (
     <div>
+      <Notification notification={notification}/>
       <h2>Phonebook</h2>
       <FilterInput variable = {formVariables[0].variable} updateFunction = {formVariables[0].updateFunction} />
       <h3>Add a new</h3>
