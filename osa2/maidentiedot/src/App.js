@@ -32,7 +32,17 @@ const Country = ({country}) => {
   )
 }
 
-const Countries = ({countries, filter}) => {
+const CountryName = ({country, setFilter}) => {
+  return(
+    <>
+      <p>{country.name.common} <button value={country.name.common} onClick={setFilter}>show</button></p> 
+    </>
+  )
+
+} 
+
+
+const Countries = ({countries, filter, setFilter}) => {
   const filteredCountries = countries.filter(country => country.name.common.toLowerCase().includes(filter.toLowerCase()))
   //console.log(filteredCountries)
   if(filteredCountries.length == 1)
@@ -46,7 +56,7 @@ const Countries = ({countries, filter}) => {
   else{
     return(
       <>
-        <p>Too many matches, specifyi another filter</p>
+       {filteredCountries.map(country => <CountryName key={country.name.official} country={country} setFilter={setFilter}/>)}
       </>
     )
   }
@@ -69,7 +79,7 @@ function App() {
    <>
    <FilterInput variable={filter} updateFunction={handleFilterChange}/>
    <h1>Countries matching search</h1>
-   <Countries countries={countries} filter={filter}/>
+   <Countries countries={countries} filter={filter} setFilter={handleFilterChange}/>
    </> 
   )
 }
