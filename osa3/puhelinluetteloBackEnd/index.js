@@ -42,13 +42,14 @@ app.get('/api/persons/:id', (request, response) => {
     response.status(404).end()
   }
 }) 
+
+
+app.delete('/api/persons/:id', (request, response) => {
+  const searchedId =  Number(request.params.id)
+  persons = persons.filter(person => person.id !== searchedId)
+  response.status(204).end()
+}) 
     
-
-
-
-
-
-
 
 app.get('/info/', (request, response) => {
   const amount = persons.length
