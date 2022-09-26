@@ -2,6 +2,7 @@ const http = require('http')
 
 const express = require('express')
 const app = express()
+app.use(express.json())
 
 let persons = [
       {
@@ -32,6 +33,33 @@ app.get('/api/persons/', (request, response) => {
   response.json(persons)
 }) 
 
+app.post('/api/persons/', (request, response) => {
+ 
+  const randomId = Math.floor(Math.random() * (Math.pow(10, 9)));
+ 
+  if(!request.body.name){
+    return response.status(400).json({
+      error: 'name missing'
+    })
+  }
+
+  if(!request.body.number){
+    return response.status(400).json({
+      error: 'number missing'
+    })
+  }
+
+
+  const newPerson = {
+    id : randomId,
+    name: request.body.name,
+    number: request.body.number
+  }
+
+  persons = persons.concat(newPerson)
+  response.json(newPerson)
+}) 
+
 app.get('/api/persons/:id', (request, response) => {
   const searchedId =  Number(request.params.id)
   const requestedPerson = persons.find(person => person.id === searchedId)
@@ -49,7 +77,9 @@ app.delete('/api/persons/:id', (request, response) => {
   persons = persons.filter(person => person.id !== searchedId)
   response.status(204).end()
 }) 
-    
+
+
+
 
 app.get('/info/', (request, response) => {
   const amount = persons.length
