@@ -176,6 +176,7 @@ app.get('/info/', (request, response, next) => {
     const timeResponse = `<p>${new Date()}</p>`
     response.send(`${phoneBookResponse}${timeResponse}`)
   })
+  .catch(error => next(error))
   
 }) 
 
