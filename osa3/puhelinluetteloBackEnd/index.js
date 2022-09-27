@@ -6,9 +6,10 @@ const Person = require('./models/person')
 const express = require('express')
 const cors = require('cors')
 const morgan = require('morgan')
+
 const app = express()
-app.use(express.json())
 app.use(express.static('build'))
+app.use(express.json())
 app.use(cors())
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :jsonBody'))
@@ -20,8 +21,6 @@ morgan.token('jsonBody', (req, res) => {
   }
   return ''
 })
-
-
 
 let persons = [
       {
@@ -48,14 +47,17 @@ let persons = [
 
 
     
-app.get('/api/persons/', (request, response) => {
+app.get('/api/persons/', (request, response, next) => {
   Person.find({}).then(persons =>{
     response.json(persons)
   })
-  
+  .catch(error => next(error))
 }) 
 
-app.post('/api/persons/', (request, response) => {
+
+
+
+app.post('/api/persons/', (request, response, next) => {
  
 
   const name = request.body.name
@@ -63,11 +65,15 @@ app.post('/api/persons/', (request, response) => {
 
   let errorMessage = ''
   
+  
+  const personWithSameName = persons.find(person => person.name === request.body.name)
+
+
+
   if(!name){
-    errorMessage =errorMessage + 'name missing'
+    errorMessage = errorMessage + 'name missing'
    
   }
-  const personWithSameName = persons.find(person => person.name === request.body.name)
 
   if(personWithSameName){
     errorMessage = errorMessage + ' name must be unique'
@@ -79,19 +85,15 @@ app.post('/api/persons/', (request, response) => {
   }
 
   if(errorMessage){
-    return response.status(400).json({
-      error: errorMessage
-    })
+    error = {
+      name: "missingParams",
+      message: errorMessage
+    }
+    next(error)
   }
-
-
+  
   const randomId = Math.floor(Math.random() * (Math.pow(10, 9)));
  
-  const newPerson = {
-    id : randomId,
-    name: name,
-    number: number
-  }
   const person = new Person({
     id: randomId,
     name: name,
@@ -101,17 +103,21 @@ app.post('/api/persons/', (request, response) => {
   person.save().then(savedPerson => {
     response.json(savedPerson)
   })
-
- // persons = persons.concat(newPerson)
- // response.json(newPerson)
-
+  .catch(error => next(error))
 
 }) 
 
-app.get('/api/persons/:id', (request, response) => {
-  const id = request.params.id
-  Person.findById(id).then(person => {
-    response.json(person)
+app.get('/api/persons/:id', (request, response, next) => {
+    Person.findById(request.params.id).then(person => {
+    if(person){
+      response.json(person)
+    }
+    else{
+      response.status(404).end()
+    }
+  })
+  .catch(error => {
+    next(error)
   })
   
 }) 
@@ -119,32 +125,31 @@ app.get('/api/persons/:id', (request, response) => {
 
 
 
-app.delete('/api/persons/:id', (request, response) => {
+
+
+app.delete('/api/persons/:id', (request, response, next) => {
   const id = request.params.id
-  const searchedId =  Number(id)
-  personExistsInDataBase = persons.find(person => person.id == searchedId)
-
-  //frontend treats 404 as an error,
-  //so we get the notification "person has was already removed from the database" correctly
-  if(!personExistsInDataBase){
-    response.status(404).end()
-  }
-
-
-  persons = persons.filter(person => person.id !== searchedId)
-  response.status(204).end()
+  
+  Person.findByIdAndDelete(id).then(() => {
+    response.status(204).end()
+  })
+  .catch(error => {
+    next(error)
+  })
 }) 
 
 
 
 
-app.get('/info/', (request, response) => {
-  const amount = persons.length
-  const phoneBookResponse = `<p>phonebook has info for ${amount} people</p>`
-  const timeResponse = `<p>${new Date()}</p>`
-
-
-  response.send(`${phoneBookResponse}${timeResponse}`)
+app.get('/info/', (request, response, next) => {
+  let amount =  0;
+  Person.count({}).then( count => {
+    amount = count
+    const phoneBookResponse = `<p>phonebook has info for ${amount} people</p>`
+    const timeResponse = `<p>${new Date()}</p>`
+    response.send(`${phoneBookResponse}${timeResponse}`)
+  })
+  
 }) 
 
 const PORT = process.env.PORT
@@ -152,3 +157,23 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
 
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.name)
+  console.error(error.message)
+ 
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+  if (error.name === 'missingParams') {
+    return response.status(400).send({ error: `${error.message}` })
+  }
+
+  next(error)
+}
+app.use(errorHandler)
