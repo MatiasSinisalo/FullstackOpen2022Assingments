@@ -1,11 +1,11 @@
 require('dotenv').config()
 const http = require('http')
-const Person = require('./models/person')
 
 
 const express = require('express')
 const cors = require('cors')
 const morgan = require('morgan')
+const Person = require('./models/person')
 
 const app = express()
 app.use(express.static('build'))
@@ -64,21 +64,16 @@ app.post('/api/persons/', (request, response, next) => {
   const number = request.body.number
 
   let errorMessage = ''
-  
-  
-  const personWithSameName = persons.find(person => person.name === request.body.name)
-
-
-
   if(!name){
     errorMessage = errorMessage + 'name missing'
    
   }
-
+  
+/*
   if(personWithSameName){
     errorMessage = errorMessage + ' name must be unique'
   }
-
+*/
 
   if(!number){
     errorMessage =  errorMessage + ' number missing'
@@ -91,7 +86,7 @@ app.post('/api/persons/', (request, response, next) => {
     }
     next(error)
   }
-  
+
   const randomId = Math.floor(Math.random() * (Math.pow(10, 9)));
  
   const person = new Person({
@@ -122,7 +117,39 @@ app.get('/api/persons/:id', (request, response, next) => {
   
 }) 
 
+app.put('/api/persons/:id', (request, response, next) => {
+  const oldName = request.body.name
+  const newNumber = request.body.number
 
+  let errorMessage = ''
+ 
+  if(!oldName){
+    errorMessage = errorMessage + 'name missing'
+   
+  }
+  if(!newNumber){
+    errorMessage =  errorMessage + ' number missing'
+  }
+
+  if(errorMessage){
+    error = {
+      name: "missingParams",
+      message: errorMessage
+    }
+    next(error)
+  }
+
+
+  const newperson = {
+    name: oldName,
+    number: newNumber
+  }
+  
+  Person.findByIdAndUpdate(request.params.id, newperson, {new:true}).then(updatedPerson => {
+    response.json(updatedPerson)
+  })
+  .catch(error => next(error))
+})
 
 
 
