@@ -35,21 +35,35 @@ app.get('/api/persons/', (request, response) => {
 
 app.post('/api/persons/', (request, response) => {
  
-  const randomId = Math.floor(Math.random() * (Math.pow(10, 9)));
- 
+
+
+
+  let errorMessage = ''
+  
   if(!request.body.name){
-    return response.status(400).json({
-      error: 'name missing'
-    })
+    errorMessage =errorMessage + 'name missing'
+   
   }
+  const personWithSameName = persons.find(person => person.name === request.body.name)
+
+  if(personWithSameName){
+    errorMessage = errorMessage + ' name must be unique'
+  }
+
 
   if(!request.body.number){
+    errorMessage =  errorMessage + ' number missing'
+  }
+
+  if(errorMessage){
     return response.status(400).json({
-      error: 'number missing'
+      error: errorMessage
     })
   }
 
 
+  const randomId = Math.floor(Math.random() * (Math.pow(10, 9)));
+ 
   const newPerson = {
     id : randomId,
     name: request.body.name,
