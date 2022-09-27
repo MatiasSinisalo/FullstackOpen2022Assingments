@@ -1,19 +1,23 @@
 const http = require('http')
 
 const express = require('express')
+const cors = require('cors')
 const morgan = require('morgan')
 const app = express()
 app.use(express.json())
+app.use(express.static('build'))
+app.use(cors())
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :jsonBody'))
 
 morgan.token('jsonBody', (req, res) => {
   const postJsonString = JSON.stringify(req.body);
-  if(postJsonString.length > 2){
+  if(postJsonString && postJsonString.length > 2){
   return JSON.stringify(req.body)
   }
   return ''
 })
+
 
 
 let persons = [
@@ -48,11 +52,12 @@ app.get('/api/persons/', (request, response) => {
 app.post('/api/persons/', (request, response) => {
  
 
-
+  const name = request.body.name
+  const number = request.body.number
 
   let errorMessage = ''
   
-  if(!request.body.name){
+  if(!name){
     errorMessage =errorMessage + 'name missing'
    
   }
@@ -63,7 +68,7 @@ app.post('/api/persons/', (request, response) => {
   }
 
 
-  if(!request.body.number){
+  if(!number){
     errorMessage =  errorMessage + ' number missing'
   }
 
@@ -78,8 +83,8 @@ app.post('/api/persons/', (request, response) => {
  
   const newPerson = {
     id : randomId,
-    name: request.body.name,
-    number: request.body.number
+    name: name,
+    number: number
   }
 
   persons = persons.concat(newPerson)
@@ -87,7 +92,8 @@ app.post('/api/persons/', (request, response) => {
 }) 
 
 app.get('/api/persons/:id', (request, response) => {
-  const searchedId =  Number(request.params.id)
+  const id = request.params.id
+  const searchedId =  Number(id)
   const requestedPerson = persons.find(person => person.id === searchedId)
   if(requestedPerson){
     response.json(requestedPerson)
@@ -98,8 +104,20 @@ app.get('/api/persons/:id', (request, response) => {
 }) 
 
 
+
+
 app.delete('/api/persons/:id', (request, response) => {
-  const searchedId =  Number(request.params.id)
+  const id = request.params.id
+  const searchedId =  Number(id)
+  personExistsInDataBase = persons.find(person => person.id == searchedId)
+
+  //frontend treats 404 as an error,
+  //so we get the notification "person has was already removed from the database" correctly
+  if(!personExistsInDataBase){
+    response.status(404).end()
+  }
+
+
   persons = persons.filter(person => person.id !== searchedId)
   response.status(204).end()
 }) 
