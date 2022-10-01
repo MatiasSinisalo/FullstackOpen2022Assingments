@@ -140,8 +140,16 @@ app.put('/api/persons/:id', (request, response, next) => {
     number: newNumber
   }
   
-  Person.findByIdAndUpdate(request.params.id, newperson, {new:true, runValidators: true, context: 'query'}).then(updatedPerson => {
-    response.json(updatedPerson)
+  Person.findByIdAndUpdate(request.params.id, newperson, {new:true, runValidators: true, context: 'query'})
+  .then(updatedPerson => {
+    if(updatedPerson){
+      response.json(updatedPerson)
+    }
+    else{
+      return  response.status(404).send({ error: `Person ${oldName} has already been removed from the database` })
+    }
+    
+   
   })
   .catch(error => next(error))
 })
@@ -199,6 +207,7 @@ const errorHandler = (error, request, response, next) => {
   else if(error.name === 'ValidationError') {
     return response.status(400).json({ error: error.message })
   }
+  
 
   next(error)
 }
