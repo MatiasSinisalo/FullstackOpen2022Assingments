@@ -68,12 +68,7 @@ app.post('/api/persons/', (request, response, next) => {
     errorMessage = errorMessage + 'name missing'
    
   }
-  
-/*
-  if(personWithSameName){
-    errorMessage = errorMessage + ' name must be unique'
-  }
-*/
+
 
   if(!number){
     errorMessage =  errorMessage + ' number missing'
@@ -145,7 +140,7 @@ app.put('/api/persons/:id', (request, response, next) => {
     number: newNumber
   }
   
-  Person.findByIdAndUpdate(request.params.id, newperson, {new:true}).then(updatedPerson => {
+  Person.findByIdAndUpdate(request.params.id, newperson, {new:true, runValidators: true, context: 'query'}).then(updatedPerson => {
     response.json(updatedPerson)
   })
   .catch(error => next(error))

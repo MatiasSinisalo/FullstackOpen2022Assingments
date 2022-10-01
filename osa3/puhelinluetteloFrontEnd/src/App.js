@@ -123,8 +123,7 @@ const App = () => {
           }, 5000);
         })
         .catch(error => {
-          setPersons(persons.filter(person => person.id !== personToModify.id))
-          setNotification({style: 'error', message: `${personToModify.name} was already removed from server`})
+          setNotification({style: 'error', message: `${error.response.data.error}`})
           setTimeout(() => {
             setNotification({style: '', message: ``})
           }, 5000);

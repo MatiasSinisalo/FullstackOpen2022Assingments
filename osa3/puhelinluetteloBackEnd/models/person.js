@@ -5,12 +5,22 @@ const url = process.env.MONGODB_URI
 mongoose.connect(url)
 
 const personSchema = new mongoose.Schema({
+    
     name:{
       type: String,
       minlength: 3,
       required: true
     },
-    number: String
+    number: {
+      type: String,
+      minlength: 8,
+      required: true,
+      validate: {
+        validator: function(s){
+          return /^(\d{2}-\d{6,}$)|^(\d{3}-\d{5,}$)/.test(s);
+        }
+      }
+    }
   })
   
   const Person = mongoose.model('Person', personSchema)
