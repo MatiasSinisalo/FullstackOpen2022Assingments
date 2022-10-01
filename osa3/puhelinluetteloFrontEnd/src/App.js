@@ -19,7 +19,6 @@ const FilterInput = ({variable, updateFunction}) =>{
   )
 }
 
-
 const Form = ({formVariables, addPerson}) =>{
   return(
     <>
@@ -79,21 +78,23 @@ const App = () => {
   const addPerson = (event) =>{
     event.preventDefault()
     
-    if(newName === ''){
-      alert("Emty name is not allowed")
-    }
-    else if(!persons.some(person => person.name === newName))
+   
+    if(!persons.some(person => person.name === newName))
     {
       personService.getAll().then(updatedPersons => {
           if(!updatedPersons.some(person => person.name === newName)){
             const newPerson = {name: newName, number: newPhoneNumber}
-            const response = personService.create(newPerson)
-            response.then(justAddedPerson => {
+            personService.create(newPerson)
+            .then(justAddedPerson => {
               setPersons(persons.concat(justAddedPerson))
               setNotification({style: 'success', message: `Added ${justAddedPerson.name}`})
               setTimeout(() => {
                 setNotification({style: '', message: ``})
               }, 5000);
+            })
+            .catch(error => {
+              setNotification({style:'error', message:`${error.response.data.error}`})
+              console.log(error.response.data)
             })
           }
           else{
