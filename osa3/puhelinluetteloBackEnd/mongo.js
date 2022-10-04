@@ -8,41 +8,41 @@ if (process.argv.length<3) {
 
 
 
-const addPerson = (name, password) =>{
-    const personsSchema = new mongoose.Schema({
-        name: String,
-        number: String
-      })
-      
-      const Person = mongoose.model('Person', personsSchema)
-      
-      const person = new Person({
-        name: name,
-        number: number
-      })
-      
-      person.save().then(result => {
-        console.log('person saved!')
-        mongoose.connection.close()
-      })
+const addPerson = (name, password) => {
+  const personsSchema = new mongoose.Schema({
+    name: String,
+    number: String
+  })
+
+  const Person = mongoose.model('Person', personsSchema)
+
+  const person = new Person({
+    name: name,
+    number: number
+  })
+
+  person.save().then(result => {
+    console.log('person saved!')
+    mongoose.connection.close()
+  })
 }
 
 const getPersons = () => {
-    const personsSchema = new mongoose.Schema({
-        name: String,
-        number: String
-      })
-      
-    const Person = mongoose.model('Person', personsSchema)
-    
-    Person.find({}).then(result => {
-        console.log("phonebook:")
-        result.forEach(person =>{
-            console.log(`${person.name} ${person.number}`)
-        })
-        mongoose.connection.close()
+  const personsSchema = new mongoose.Schema({
+    name: String,
+    number: String
+  })
+
+  const Person = mongoose.model('Person', personsSchema)
+
+  Person.find({}).then(result => {
+    console.log('phonebook:')
+    result.forEach(person => {
+      console.log(`${person.name} ${person.number}`)
     })
-    
+    mongoose.connection.close()
+  })
+
 }
 
 
@@ -57,10 +57,10 @@ mongoose.connect(url)
 
 
 if(name && number){
-    addPerson(name, number);
+  addPerson(name, number)
 }
 else{
-    getPersons();
+  getPersons()
 }
 
 
