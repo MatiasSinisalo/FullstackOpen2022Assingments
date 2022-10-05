@@ -1,10 +1,11 @@
+const config = require('./utils/config')
 const express = require('express')
 const app = express()
 const cors = require('cors')
 const blogsRouter = require('./controllers/blogs')
 const mongoose = require('mongoose')
-require('dotenv').config()
-const mongoUrl = mongoose.connect(process.env.MONGODB_URI)
+
+const mongoUrl = mongoose.connect(config.MONGODB_URI)
 
 
 app.use(cors())
