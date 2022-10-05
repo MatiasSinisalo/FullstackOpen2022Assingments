@@ -4,6 +4,12 @@ const app = express()
 const cors = require('cors')
 app.use(cors())
 app.use(express.json())
+
+const mongoose = require('mongoose')
+require('dotenv').config()
+const mongoUrl = 
+mongoose.connect(process.env.MONGODB_URI)
+
 const Blog = require('./models/blog')
 
 app.get('/api/blogs', (request, response) => {

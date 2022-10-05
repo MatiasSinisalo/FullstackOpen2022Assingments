@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-require('dotenv').config()
+
 const blogSchema = mongoose.Schema({
   title: String,
   author: String,
@@ -7,8 +7,6 @@ const blogSchema = mongoose.Schema({
   likes: Number
 })
 
-const mongoUrl = 
-mongoose.connect(process.env.MONGODB_URI)
 
 blogSchema.set('toJSON', {
     transform: (document, returnedObject) => {
@@ -18,6 +16,5 @@ blogSchema.set('toJSON', {
     }
   })
   
-  
-  
-  module.exports = mongoose.model('Blog', blogSchema)
+
+module.exports = mongoose.model('Blog', blogSchema)
