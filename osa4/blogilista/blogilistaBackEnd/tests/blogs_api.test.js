@@ -135,6 +135,32 @@ test('blog created with empty likes is assinged 0 likes when added to database',
     expect(returnedBlogs).toContainEqual(compareBlog)
 })
 
+test('if new blog title is empty return 400', async () => {
+
+    const newBlog = {
+        author: "test",
+        title: "",
+        url: "https://www.helsinki.fi/fi",
+    }
+
+    await api.post('/api/blogs').send(newBlog).expect(400)
+  
+   
+})
+
+test('if new blog url is empty return 400', async () => {
+
+    const newBlog = {
+        author: "test",
+        title: "test title",
+        url: "",
+    }
+
+    await api.post('/api/blogs').send(newBlog).expect(400)
+  
+   
+})
+
 beforeEach(async () => {
     await Blog.deleteMany({})
     const blogObjects = blogs.map(blog => new Blog(blog))

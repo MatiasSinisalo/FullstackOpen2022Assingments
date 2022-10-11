@@ -12,6 +12,15 @@ blogsRouter.get('/', (request, response) => {
 
 blogsRouter.post('/', (request, response) => {
   const blog = request.body
+  
+  if(!blog.url){
+     return response.status(400).send()
+  }
+
+  if(!blog.title){
+    return response.status(400).send()
+  }
+  
   if(!blog.likes){
     blog.likes = 0
   }
