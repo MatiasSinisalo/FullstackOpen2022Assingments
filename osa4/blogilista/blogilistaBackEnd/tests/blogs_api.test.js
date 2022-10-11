@@ -82,11 +82,11 @@ test('adding a new blog increases the returned blogs length by 1', async () => {
     const newBlog = {
         author: "test author",
         title: "just added blog",
-        url: "https://www.helsinki.fi/fi"
+        url: "https://www.helsinki.fi/fi",
+        likes: 10
     }
-    blogObj = new Blog(newBlog)
-    await blogObj.save()
-
+    await api.post('/api/blogs').send(newBlog)
+  
     const response =  await api.get('/api/blogs')
     expect(response.body).toHaveLength(blogs.length + 1)
 
@@ -97,12 +97,11 @@ test('just added blog is found from the database', async () => {
     const newBlog = {
         author: "test author",
         title: "just added blog",
-        url: "https://www.helsinki.fi/fi"
+        url: "https://www.helsinki.fi/fi",
+        likes: 10
     }
-
-    blogObj = new Blog(newBlog)
-    await blogObj.save()
-
+    await api.post('/api/blogs').send(newBlog)
+  
     const response =  await api.get('/api/blogs')
     const returnedBlogs = response.body.map(blog => {
         delete blog.id
@@ -112,6 +111,29 @@ test('just added blog is found from the database', async () => {
     expect(returnedBlogs).toContainEqual(newBlog)
 })
 
+test('blog created with empty likes is assinged 0 likes when added to database', async () => {
+
+    const newBlog = {
+        author: "test author",
+        title: "just added blog",
+        url: "https://www.helsinki.fi/fi",
+    }
+
+    await api.post('/api/blogs').send(newBlog)
+  
+    const response =  await api.get('/api/blogs')
+    const returnedBlogs = response.body.map(blog => {
+        delete blog.id
+        return blog
+    })
+    const compareBlog = {
+        author: "test author",
+        title: "just added blog",
+        url: "https://www.helsinki.fi/fi",
+        likes: 0
+    }
+    expect(returnedBlogs).toContainEqual(compareBlog)
+})
 
 beforeEach(async () => {
     await Blog.deleteMany({})
