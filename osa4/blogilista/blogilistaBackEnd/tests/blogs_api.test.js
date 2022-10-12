@@ -161,6 +161,48 @@ test('if new blog url is empty return 400', async () => {
    
 })
 
+
+test('deleted blog is removed from the database', async () => {
+  const request = await api.get(`/api/blogs/`)
+  const blogToBeRemoved = request.body[0]
+  await api.delete(`/api/blogs/${blogToBeRemoved.id}`)
+
+  await api.get(`/api/blogs/${blogToBeRemoved.id}`).expect(404)
+
+})
+
+test('changing a blog changes values correctly', async () => {
+  const request = await api.get(`/api/blogs/`)
+  const blogToBeChanged = request.body[0]
+
+  const blogId = blogToBeChanged.id
+  delete blogToBeChanged.id
+ 
+  const newLikes = blogToBeChanged.likes + 1
+  blogToBeChanged.likes = newLikes
+  
+  await api.put(`/api/blogs/${blogId}`).send(blogToBeChanged)
+  const allBlogsReq = await api.get(`/api/blogs/`)
+  const allBlogs = allBlogsReq.body
+ 
+  const blogQuery = await api.get(`/api/blogs/${blogId}`)
+  
+  const changedBlog = blogQuery.body
+  expect(changedBlog.likes).toBe(newLikes);
+
+
+
+})
+
+test('changing a missing blog returns status code 404 missing', async () => {
+  const request = await api.get(`/api/blogs/`)
+  const blogToBeChanged = request.body[0]
+  const blogId = blogToBeChanged.id
+  delete blogToBeChanged.id
+  await api.delete(`/api/blogs/${blogId}`)
+  await api.put(`/api/blogs/${blogId}`).send(blogToBeChanged).expect(404)
+})
+
 beforeEach(async () => {
     await Blog.deleteMany({})
     const blogObjects = blogs.map(blog => new Blog(blog))
