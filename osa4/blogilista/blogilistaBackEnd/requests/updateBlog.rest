@@ -1,9 +1,9 @@
-PUT http://localhost:3003/api/blogs/634586f75782afe520325b19
+PUT http://localhost:3003/api/blogs/634aa1a24a6190fdf3589774
 content-type: application/json
 
 {
- "title": "test7",
-  "author": "author 7",
+  "title": "this is a debug test",
+  "author": "debug test title",
   "url": "url.com",
-  "likes": "17"
+  "likes": "18"
 }

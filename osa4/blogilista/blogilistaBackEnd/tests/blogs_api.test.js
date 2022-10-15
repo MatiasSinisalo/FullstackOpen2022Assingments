@@ -100,15 +100,13 @@ test('just added blog is found from the database', async () => {
         url: "https://www.helsinki.fi/fi",
         likes: 10
     }
-    await api.post('/api/blogs').send(newBlog)
+    const addedBlog = await api.post('/api/blogs').send(newBlog)
   
-    const response =  await api.get('/api/blogs')
-    const returnedBlogs = response.body.map(blog => {
-        delete blog.id
-        return blog
-    })
-
-    expect(returnedBlogs).toContainEqual(newBlog)
+    const blogToCheck = await Blog.findById(addedBlog.body.blog.id)
+  
+ 
+    expect(blogToCheck.author).toBe("test author")
+    expect(blogToCheck.title).toBe("just added blog")
 })
 
 test('blog created with empty likes is assinged 0 likes when added to database', async () => {
@@ -119,20 +117,10 @@ test('blog created with empty likes is assinged 0 likes when added to database',
         url: "https://www.helsinki.fi/fi",
     }
 
-    await api.post('/api/blogs').send(newBlog)
+    const savedBlog = await api.post('/api/blogs').send(newBlog)
   
-    const response =  await api.get('/api/blogs')
-    const returnedBlogs = response.body.map(blog => {
-        delete blog.id
-        return blog
-    })
-    const compareBlog = {
-        author: "test author",
-        title: "just added blog",
-        url: "https://www.helsinki.fi/fi",
-        likes: 0
-    }
-    expect(returnedBlogs).toContainEqual(compareBlog)
+    const blogToCheck =  await Blog.findById(savedBlog.body.blog.id)
+    expect(blogToCheck.likes).toBe(0)
 })
 
 test('if new blog title is empty return 400', async () => {

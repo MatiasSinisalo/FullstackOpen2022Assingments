@@ -134,6 +134,9 @@ describe('user creation checks', () => {
 
 beforeEach(async () => {
     await User.deleteMany({})
+    const newUser = {username:"placeholder",name:"placeholder name"}
+    const userObj = new User(newUser)
+    await userObj.save()
   //  const userObjects = users.map(user => new User(user))
   //  const userPromises = userObjects.map(userObj => userObj.save())
   //  await Promise.all(userPromises)

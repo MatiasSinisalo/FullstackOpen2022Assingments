@@ -1,16 +1,14 @@
 
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
-blogsRouter.get('/', (request, response) => {
-  Blog
-    .find({})
-    .then(blogs => {
-      response.json(blogs)
-    })
+blogsRouter.get('/', async (request, response) => {
+  const blogs = await Blog.find({}).populate('user', {username: 1, name: 1, id: 1})
+  return response.json(blogs)
 })
 
-blogsRouter.post('/', (request, response) => {
+blogsRouter.post('/', async (request, response) => {
   const blog = request.body
   
   if(!blog.url){
@@ -24,13 +22,33 @@ blogsRouter.post('/', (request, response) => {
   if(!blog.likes){
     blog.likes = 0
   }
-  const blogObject = new Blog(blog)
+  
+  const placeholderUser = await User.findOne({})
+  
 
-  blogObject
-    .save()
-    .then(result => {
-      response.status(201).json(result)
-    })
+  const blogToSave = {
+    title: blog.title,
+    author: blog.author,
+    user: placeholderUser.id,
+    likes: blog.likes,
+    url: blog.url
+  }
+
+  const blogObject = new Blog(blogToSave)
+
+ const result =  await blogObject.save()
+ 
+ const savedBlogId = result.id
+ const userBlogs = placeholderUser.blogs.concat(savedBlogId)
+ const updatedUser = await User.findByIdAndUpdate(placeholderUser.id, {blogs: userBlogs},  {new: true})
+ 
+ if(updatedUser){
+  return  response.status(201).json({blog: result, user: updatedUser})
+ }
+ else{
+  return response.status(404).json({error: "user assigned to the blog has already been removed from the database!"})
+ }
+  
 })
 
 blogsRouter.put('/:id', async (request, response) => {
@@ -60,7 +78,7 @@ blogsRouter.put('/:id', async (request, response) => {
 
 
 blogsRouter.get('/:id', async (request, response) => {
-  const blogRequest = await Blog.findById(request.params.id)
+  const blogRequest = await Blog.findById(request.params.id).populate('user')
  
   if(blogRequest){
     response.json(blogRequest)
