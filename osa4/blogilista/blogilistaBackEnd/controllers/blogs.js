@@ -100,6 +100,37 @@ blogsRouter.get('/:id', async (request, response) => {
 
 
 blogsRouter.delete('/:id', async (request, response) => {
+
+  try{
+    
+    const validToken = jwt.verify(request.token, process.env.SECRET)
+    
+    const userid = validToken.id
+    const blogToBeRemoved = await Blog.findById(request.params.id)
+    if(!blogToBeRemoved){
+      return response.status(404).json({error: 'blog has already been removed from the server!'})
+    }
+
+
+
+    if(!blogToBeRemoved.user.toString() === userid.toString()){
+      return response.status(401).json({error: 'Unauthorized'})
+    }
+
+    if(!validToken | !validToken.id){
+      return response.status(404).json({error: 'token missing or invalid'})
+    }
+
+  }
+  catch{
+    return response.status(404).json({error: 'token missing or invalid'})
+  }
+
+ 
+
+  
+
+
   await Blog.findByIdAndDelete(request.params.id)
   return response.status(204).end()
 })
