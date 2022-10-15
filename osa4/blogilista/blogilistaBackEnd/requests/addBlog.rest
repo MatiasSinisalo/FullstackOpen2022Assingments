@@ -1,6 +1,6 @@
 POST http://localhost:3003/api/blogs/
 content-type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBsYWNlaG9sZGVyIiwiaWQiOiI2MzRhYjQ5YmRhNjdmZTIxYTYxM2Q3YmIiLCJpYXQiOjE2NjU4NDA0OTQsImV4cCI6MTY2NTg0NDA5NH0.3H6ky6NSEqriw0gINErabmQN5WvaizyuSU4f5G7eYxs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBsYWNlaG9sZGVyIiwiaWQiOiI2MzRhYjQ5YmRhNjdmZTIxYTYxM2Q3YmIiLCJpYXQiOjE2NjU4NDIyOTAsImV4cCI6MTY2NTg0NTg5MH0.3mWJF8jGexu217XDMEb_FNrJ3GizQiKGsM1IGYRV-SY
 
 {
  "title": "this tests if we add a blog with token",
