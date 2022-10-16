@@ -15,7 +15,7 @@ const getUser = async (request, response, next) => {
                     if(user){
                         request.user = user
                     }
-                }
+            }
         }
         catch{
             next()

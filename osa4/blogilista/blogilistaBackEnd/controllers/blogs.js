@@ -14,15 +14,10 @@ blogsRouter.get('/', async (request, response) => {
 blogsRouter.post('/', async (request, response) => {
   const blog = request.body
   
-  
- 
-  const token = request.token
-  const decodedToken = jwt.verify(token, process.env.SECRET)
-  if(!decodedToken ||!decodedToken.id){
-    return response.status(404).json({error: 'token missing or invalid'})
+  if(!request.user){
+    return response.status(401).json({error: 'Unauthorized'})
   }
-
-  const user = await User.findById(decodedToken.id)
+  const user = request.user
 
   if(!blog.url){
      return response.status(400).end()
@@ -63,15 +58,21 @@ blogsRouter.post('/', async (request, response) => {
 
 blogsRouter.put('/:id', async (request, response) => {
   const blog = request.body
+ 
+  if(!request.user){
+    return response.status(401).json({error: 'Unauthorized'})
+  }
   
-  if(!blog.url){
-     return response.status(400).end()
+  const toBeModifiedBlog = await Blog.findOne({_id: request.params.id})
+  if(!toBeModifiedBlog){
+    return response.status(404).json({error: `Blog has already been removed from the database`})
   }
 
-  if(!blog.title){
-    return response.status(400).end()
+
+  if(!(toBeModifiedBlog.user.toString() === request.user.id.toString())){
+    return response.status(401).json({error: 'Unauthorized'})
   }
- 
+
   if(!blog.likes){
     blog.likes = 0
   }
@@ -103,7 +104,7 @@ blogsRouter.delete('/:id', async (request, response) => {
 
  
   if(!request.user){
-    return response.status(404).json({error: 'token missing or invalid'})
+    return response.status(401).json({error: 'Unauthorized'})
   }
 
 
@@ -114,15 +115,12 @@ blogsRouter.delete('/:id', async (request, response) => {
   }
 
 
+ 
 
-  if(!blogToBeRemoved.user === userid){
+
+  if(!(blogToBeRemoved.user.toString() === userid.toString())){
     return response.status(401).json({error: 'Unauthorized'})
   }
-
-
-  
-
-  
 
 
   await Blog.findByIdAndDelete(request.params.id)
