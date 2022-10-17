@@ -4,6 +4,16 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
+const Notification = ({notification}) =>{
+
+  return (
+    <div className={notification.style}>
+      {notification.message}
+    </div>
+  )
+}
+
+
 const LoginForm = ({username, password, setUsername, setPassword, handleLogin}) => {
   return (
     <div>
@@ -72,13 +82,30 @@ const App = () => {
   const [title, setTitle] = useState("")
   const [author, setAuthor] = useState("")
   const [url, setUrl] = useState("")
-  
+  const [notification, setNotification] = useState({style: "", message: ""})
+
   const handleBlogCreation = async (event) => {
     event.preventDefault()
-    const response = await blogService.create({title: title, author: author, url: url})
-    //console.log(response)
+    
+    const response = await blogService.create({title: title, author: author, url: url}).catch(error => {
+      setNotification({style: "error", message: error.message})
+      setTimeout(() => {
+        setNotification({style: '', message: ''})
+      }, 5000);
+
+    })
+    
+    if(response.blog){
+      setNotification({style: "success", message: `Created a blog: ${response.blog.title} with author: ${response.blog.author}`})
+      setTimeout(() => {
+        setNotification({style: '', message: ''})
+      }, 5000);
+    }
+   
     const newBlogs = await blogService.getAll()
-    setBlogs(newBlogs)
+    setBlogs(newBlogs) 
+    
+   
   }
   
   useEffect(() => {
@@ -89,10 +116,13 @@ const App = () => {
 
   useEffect(() => {
     const userJSON = window.localStorage.getItem('user')
+   // console.log(userJSON)
     if(userJSON){
      const user = JSON.parse(userJSON)
-     setUser(user) 
-     blogService.setToken(user.token)
+     if(user){
+      setUser(user) 
+      blogService.setToken(user.token)
+     }
     }
   }, [])
 
@@ -102,26 +132,44 @@ const App = () => {
       event.preventDefault()
     //  console.log(username)
     //  console.log(password)
-      const loginInfo = await loginService.login({username, password})
-   //   console.log(loginInfo)
-      if(loginInfo.token){
+      const loginInfo = await loginService.login({username, password}).catch(error => {
+        setNotification({style: "error", message: `wrong username or password`})
+        setTimeout(() => {
+        setNotification({style: '', message: ''})
+      }, 5000);
+      })
+      
+      if(loginInfo){
         setUser(loginInfo)
         blogService.setToken(loginInfo.token)
         window.localStorage.setItem('user', JSON.stringify(loginInfo))
+
+        setNotification({style: "success", message: `logged in as ${loginInfo.name} `})
+        setTimeout(() => {
+        setNotification({style: '', message: ''})
+      }, 5000);
       }
-      console.log(loginInfo)
+    //  setUsername("")
+    //  setPassword("")
+     // console.log(loginInfo)
     }
   
     const handleLogout = (event) => {
       event.preventDefault()
       setUser(null)
       window.localStorage.setItem('user', null)
+      setPassword("")
+      setUsername("")
+      setNotification({style: "success", message: `logged out`})
+        setTimeout(() => {
+        setNotification({style: '', message: ''})
+      }, 5000);
     }
    
  
   return (
     <>   
-
+      <Notification notification={notification}/>
       {
         user === null ?
         <LoginForm username={username} password={password} setUsername={setUsername} setPassword={setPassword} handleLogin={handleLogin}/>
