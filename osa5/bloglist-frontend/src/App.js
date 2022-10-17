@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, forwardRef, useRef, useImperativeHandle} from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -12,6 +12,31 @@ const Notification = ({notification}) =>{
     </div>
   )
 }
+
+const Togglable = forwardRef((props, ref) => {
+  const [visible, setVisible] = useState(false)
+
+  const hideWhenVisible = { display: visible ? 'none' : '' }
+  const showWhenVisible = { display: visible ? '' : 'none' }
+
+  const toggleVisibility = () => {
+    setVisible(!visible)
+  }
+  useImperativeHandle(ref, ()=>{
+    return {toggleVisibility}
+  })
+  return (
+    <div>
+      <div style={hideWhenVisible}>
+        <button onClick={toggleVisibility}>{props.buttonLabel}</button>
+      </div>
+      <div style={showWhenVisible}>
+        {props.children}
+        <button onClick={toggleVisibility}>cancel</button>
+      </div>
+    </div>
+  )
+})
 
 
 const LoginForm = ({username, password, setUsername, setPassword, handleLogin}) => {
@@ -29,22 +54,33 @@ const LoginForm = ({username, password, setUsername, setPassword, handleLogin}) 
   )
 }
 
-const LoggedInView = ({user, blogs, logOut, handleBlogCreation, title, setTitle, author, setAuthor, url, setUrl}) => {
+const LoggedInView = forwardRef((props, ref) => {
+  const createBlogsRef = useRef()
+
+  useImperativeHandle(ref, () => {
+    return {createBlogsRef}
+  })
   return(
     <>
-    <h2>{user.name} logged in</h2>
-    <input type="submit" onClick={logOut} value="logout"></input>
-    <CreateBlogs  handleBlogCreation={handleBlogCreation} title={title} setTitle={setTitle} author={author} setAuthor={setAuthor} url={url} setUrl={setUrl}/>
-    <Blogs blogs={blogs}/>
+    <h2>{props.user.name} logged in</h2>
+    <input type="submit" onClick={props.logOut} value="logout"></input>
+    <p></p>
+    <Togglable buttonLabel="new blog" ref={createBlogsRef}>
+      <CreateBlogs  handleBlogCreation={props.handleBlogCreation} title={props.title} setTitle={props.setTitle} author={props.author} setAuthor={props.setAuthor} url={props.url} setUrl={props.setUrl}/>
+    </Togglable>
+    <Blogs blogs={props.blogs}/>
     
     </>
   )
-}
+})
 
 const CreateBlogs = ({handleBlogCreation, title, setTitle, author, setAuthor, url, setUrl}) => {
   
+
   return(
     <>
+   
+    
       <h2>create new</h2>
       <form onSubmit={handleBlogCreation}>
       title<input type="text" value={title} onChange={({target}) => setTitle(target.value)}></input>
@@ -78,11 +114,12 @@ const App = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [user, setUser] = useState(null)
-
+  
   const [title, setTitle] = useState("")
   const [author, setAuthor] = useState("")
   const [url, setUrl] = useState("")
   const [notification, setNotification] = useState({style: "", message: ""})
+  const LoggedInViewRef = useRef()
 
   const handleBlogCreation = async (event) => {
     event.preventDefault()
@@ -104,8 +141,8 @@ const App = () => {
    
     const newBlogs = await blogService.getAll()
     setBlogs(newBlogs) 
-    
-   
+   const createBlogsFormRef =  LoggedInViewRef.current.createBlogsRef.current
+   createBlogsFormRef.toggleVisibility()
   }
   
   useEffect(() => {
@@ -174,7 +211,7 @@ const App = () => {
         user === null ?
         <LoginForm username={username} password={password} setUsername={setUsername} setPassword={setPassword} handleLogin={handleLogin}/>
         :
-        <LoggedInView user={user} blogs={blogs} logOut={handleLogout} handleBlogCreation={handleBlogCreation} title={title} setTitle={setTitle} author={author} setAuthor={setAuthor} url={url} setUrl={setUrl}/>
+        <LoggedInView user={user} blogs={blogs} logOut={handleLogout} handleBlogCreation={handleBlogCreation} title={title} setTitle={setTitle} author={author} setAuthor={setAuthor} url={url} setUrl={setUrl} ref={LoggedInViewRef}/>
       }
     
    
