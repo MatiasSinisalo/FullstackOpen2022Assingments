@@ -19,10 +19,11 @@ const LoginForm = ({username, password, setUsername, setPassword, handleLogin}) 
   )
 }
 
-const LoggedInView = ({user, blogs}) => {
+const LoggedInView = ({user, blogs, logOut}) => {
   return(
     <>
     <h2>{user.name} logged in</h2>
+    <input type="submit" onClick={logOut} value="logout"></input>
     <Blogs blogs={blogs}/>
     
     </>
@@ -52,6 +53,14 @@ const App = () => {
     )  
   }, [])
 
+  useEffect(() => {
+    const userJSON = window.localStorage.getItem('user')
+    if(userJSON){
+     const user = JSON.parse(userJSON)
+     setUser(user) 
+    }
+  }, [])
+
 
  
   const handleLogin = async (event)=>{
@@ -62,9 +71,15 @@ const App = () => {
    //   console.log(loginInfo)
       if(loginInfo.token){
         setUser(loginInfo)
+        window.localStorage.setItem('user', JSON.stringify(loginInfo))
       }
     }
   
+    const handleLogout = (event) => {
+      event.preventDefault()
+      setUser(null)
+      window.localStorage.setItem('user', null)
+    }
    
  
   return (
@@ -74,7 +89,7 @@ const App = () => {
         user === null ?
         <LoginForm username={username} password={password} setUsername={setUsername} setPassword={setPassword} handleLogin={handleLogin}/>
         :
-        <LoggedInView user={user} blogs={blogs}/>
+        <LoggedInView user={user} blogs={blogs} logOut={handleLogout}/>
       }
     
    
