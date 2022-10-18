@@ -3,7 +3,7 @@ import { useState } from "react"
 
 
 
-const Blog = ({blog, handleLike}) => {
+const Blog = ({blog, handleLike, handleRemoval, user}) => {
   const [fullViewVisible, setFullViewVisible] = useState(false)
  
   const toggleFullView = () => {
@@ -11,9 +11,13 @@ const Blog = ({blog, handleLike}) => {
   }
  
   const increaseLikes = async () => {
+   
    await handleLike(blog)
   } 
 
+  const removeBlog = async() => {
+    await handleRemoval(blog)
+  }
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -37,6 +41,8 @@ const Blog = ({blog, handleLike}) => {
       <p>likes {blog.likes} <button onClick={increaseLikes}>like</button> </p>
      
       <p><b>{blog.author}</b></p>
+
+      {blog.user.username === user.username ? <button onClick={removeBlog}>remove</button> : <></>}
 
     </div>
   )

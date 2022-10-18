@@ -10,7 +10,7 @@ const LoggedInView = (props) => {
       
       <CreateBlogs blogs={props.blogs} setBlogs={props.setBlogs} setNotification={props.setNotification}/>
      
-      <Blogs blogs={props.blogs} handleLike = {props.handleLike}/>
+      <Blogs blogs={props.blogs} handleLike = {props.handleLike} handleRemoval={props.handleRemoval}  user={props.user}/>
       
       </>
     )

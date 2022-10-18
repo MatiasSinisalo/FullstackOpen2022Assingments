@@ -68,6 +68,13 @@ const App = () => {
         setNotification({style: '', message: ''})
       }, 5000);
     }
+
+    const refreshBlogs = async () => {
+      const updatedBlogs = await blogsService.getAll()
+      const sortedBlogs = updatedBlogs.sort((a, b) => {return b.likes - a.likes})
+      setBlogs(sortedBlogs)
+    }
+
     const handleLike = async blog => {
       const modifiedBlogData = {
         likes:  blog.likes + 1,
@@ -78,11 +85,17 @@ const App = () => {
         id: blog.id
       }
       const response = await blogsService.modifyi(modifiedBlogData)
-      const updatedBlogs = await blogsService.getAll()
-      const sortedBlogs = updatedBlogs.sort((a, b) => {return b.likes - a.likes})
-      setBlogs(sortedBlogs)
+      await refreshBlogs()
     }
-  
+    
+    const handleRemoval = async blog => {
+
+      const confirmRemoval = window.confirm(`remove blog ${blog.title} by ${blog.author}?`)
+      if(confirmRemoval == true){
+        const response = await blogService.remove(blog)
+        await refreshBlogs()
+      }
+    } 
  
   return (
     <>   
@@ -91,7 +104,7 @@ const App = () => {
         user === null ?
         <LoginForm username={username} password={password} setUsername={setUsername} setPassword={setPassword} handleLogin={handleLogin}/>
         :
-        <LoggedInView user={user} blogs={blogs} logOut={handleLogout} setBlogs={setBlogs} setNotification={setNotification} handleLike={handleLike}/>
+        <LoggedInView user={user} blogs={blogs} logOut={handleLogout} setBlogs={setBlogs} setNotification={setNotification} handleLike={handleLike} handleRemoval={handleRemoval}/>
       }
     </>
   )
