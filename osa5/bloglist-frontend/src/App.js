@@ -6,6 +6,7 @@ import loginService from './services/login'
 import Notification from './components/Notification'
 import LoginForm from './components/LoginForm'
 import LoggedInView from './components/loggedInView'
+import blogsService from './services/blogs'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -67,7 +68,21 @@ const App = () => {
         setNotification({style: '', message: ''})
       }, 5000);
     }
-   
+    const handleLike = async blog => {
+      const modifiedBlogData = {
+        likes:  blog.likes + 1,
+        user: blog.user.id,
+        title: blog.title,
+        author: blog.author,
+        url: blog.url,
+        id: blog.id
+      }
+      const response = await blogsService.modifyi(modifiedBlogData)
+      const updatedBlogs = await blogsService.getAll()
+      const sortedBlogs = updatedBlogs.sort((a, b) => {return b.likes - a.likes})
+      setBlogs(sortedBlogs)
+    }
+  
  
   return (
     <>   
@@ -76,7 +91,7 @@ const App = () => {
         user === null ?
         <LoginForm username={username} password={password} setUsername={setUsername} setPassword={setPassword} handleLogin={handleLogin}/>
         :
-        <LoggedInView user={user} blogs={blogs} logOut={handleLogout} setBlogs={setBlogs} setNotification={setNotification}/>
+        <LoggedInView user={user} blogs={blogs} logOut={handleLogout} setBlogs={setBlogs} setNotification={setNotification} handleLike={handleLike}/>
       }
     </>
   )
