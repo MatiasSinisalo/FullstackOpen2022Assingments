@@ -95,6 +95,27 @@ const App = () => {
       await refreshBlogs()
     }
   }
+  const createBlog = async(blog) => {
+    
+    const response = await blogService.create(blog).catch(error => {
+      setNotification({ style: 'error', message: error.message })
+      setTimeout(() => {
+        setNotification({ style: '', message: '' })
+      }, 5000)
+
+    })
+
+    if(response.blog){
+      setNotification({ style: 'success', message: `Created a blog: ${response.blog.title} with author: ${response.blog.author}` })
+      setTimeout(() => {
+        setNotification({ style: '', message: '' })
+      }, 5000)
+    }
+
+    const newBlogs = await blogService.getAll()
+    setBlogs(newBlogs)
+
+  }
 
   return (
     <>
@@ -103,7 +124,7 @@ const App = () => {
         user === null ?
           <LoginForm username={username} password={password} setUsername={setUsername} setPassword={setPassword} handleLogin={handleLogin}/>
           :
-          <LoggedInView user={user} blogs={blogs} logOut={handleLogout} setBlogs={setBlogs} setNotification={setNotification} handleLike={handleLike} handleRemoval={handleRemoval}/>
+          <LoggedInView user={user} blogs={blogs} logOut={handleLogout} createBlog={createBlog} handleLike={handleLike} handleRemoval={handleRemoval}/>
       }
     </>
   )

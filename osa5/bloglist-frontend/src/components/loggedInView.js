@@ -8,7 +8,7 @@ const LoggedInView = (props) => {
       <input type="submit" onClick={props.logOut} value="logout"></input>
       <p></p>
 
-      <CreateBlogs blogs={props.blogs} setBlogs={props.setBlogs} setNotification={props.setNotification}/>
+      <CreateBlogs blogs={props.blogs} createBlog={props.createBlog}/>
 
       <Blogs blogs={props.blogs} handleLike = {props.handleLike} handleRemoval={props.handleRemoval}  user={props.user}/>
 
