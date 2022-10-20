@@ -91,3 +91,24 @@ test('<Blog />  displays title when not collapsed', async () => {
    
 })
 
+test('<Blog />  when pressing like button 2 times the event handler gets called 2 times', async () => {
+    const mockHandler = jest.fn()
+
+    const blogUser = {username : "placeholder"}
+    render(<Blog blog={{title: "test title", author: "test author", url: "test url", user: blogUser}} user={{username: "placeholder"}} handleLike={mockHandler} />)
+ 
+    const user = userEvent.setup()
+    const button = screen.getByText('view')
+    await user.click(button)
+
+   
+    const likeButton = screen.getByText('like')
+    await user.click(likeButton)
+    await user.click(likeButton)
+   
+    expect(mockHandler.mock.calls).toHaveLength(2)
+  
+   
+})
+
+
