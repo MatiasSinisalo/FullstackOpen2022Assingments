@@ -1,11 +1,11 @@
 
-const Notification = ({notification}) =>{
+const Notification = ({ notification }) => {
 
-    return (
-      <div className={notification.style}>
-        {notification.message}
-      </div>
-    )
-  }
+  return (
+    <div className={notification.style}>
+      {notification.message}
+    </div>
+  )
+}
 
 export default Notification
