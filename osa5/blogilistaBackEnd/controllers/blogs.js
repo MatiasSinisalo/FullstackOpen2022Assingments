@@ -68,9 +68,13 @@ blogsRouter.put('/:id', async (request, response) => {
     return response.status(404).json({error: `Blog has already been removed from the database`})
   }
 
-
+  
   if(!(toBeModifiedBlog.user.toString() === request.user.id.toString())){
-    return response.status(401).json({error: 'Unauthorized'})
+    //if the modification changes title, auhor, url or the user it is not authorized since the original user isnt the one creating the change
+    if(toBeModifiedBlog.title !== blog.title | toBeModifiedBlog.author !== blog.author | toBeModifiedBlog.url !== blog.url | toBeModifiedBlog.user.toString() !== blog.user.toString())
+    {
+      return response.status(401).json({error: 'Unauthorized'})
+    }
   }
 
   if(!blog.likes){
