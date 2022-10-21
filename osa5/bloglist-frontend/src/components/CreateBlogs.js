@@ -1,5 +1,4 @@
 import { useState, useRef } from 'react'
-import blogService from '../services/blogs'
 import Togglable from './Togglable'
 import PropTypes from 'prop-types'
 const CreateBlogs = ({ createBlog }) => {
@@ -12,8 +11,7 @@ const CreateBlogs = ({ createBlog }) => {
   const handleBlogCreation = async (event) => {
     event.preventDefault()
 
-    await createBlog({title: title, author: author, url: url})
-    
+    await createBlog({ title: title, author: author, url: url })
     creationFormToggleRef.current.toggleVisibility()
   }
 
@@ -39,7 +37,6 @@ const CreateBlogs = ({ createBlog }) => {
 
 CreateBlogs.propTypes = {
   createBlog: PropTypes.func.isRequired,
-  
 }
 
 export default CreateBlogs

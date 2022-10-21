@@ -96,7 +96,6 @@ const App = () => {
     }
   }
   const createBlog = async(blog) => {
-    
     const response = await blogService.create(blog).catch(error => {
       setNotification({ style: 'error', message: error.message })
       setTimeout(() => {
