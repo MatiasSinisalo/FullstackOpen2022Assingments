@@ -60,11 +60,23 @@ describe('Blog app', function() {
         })
 
         describe('when logged in', function() {
-            beforeEach( async function () {
-                const response = await cy.request('POST', 'http://localhost:3003/api/login/', {username: users[0].username, password: users[0].password})
-                localStorage.setItem('user', JSON.stringify(response.body))
-                cy.visit('http://localhost:3000')
+           
 
+            beforeEach(function () {
+               
+                cy.request('POST', 'http://localhost:3003/api/login/', {username: users[0].username, password: users[0].password}).then(
+                   ({body}) => {
+                        localStorage.setItem('user', JSON.stringify(body))
+                        cy.visit('http://localhost:3000')
+                    }
+                )
+               
+             
+               
+                
+         
+                
+            
             })
 
             it('a blog can be created', function () {
@@ -91,6 +103,49 @@ describe('Blog app', function() {
                 cy.get("@likedBlog").contains("likes 1")
 
                 
+
+            })
+
+            it('added blog can be removed', function () {
+                cy.contains("add new blog").click()
+                
+                cy.createBlog(blogs[0])
+                cy.visit('http://localhost:3000')
+                cy.contains(`${blogs[0].title} ${blogs[0].author}`).contains("view").click()
+                cy.contains(`${blogs[0].url}`).parent().as("blogToBeRemoved")
+                cy.get("@blogToBeRemoved").contains("remove").click()
+                cy.contains(`${blogs[0].url}`).should('not.exist')
+                cy.contains(`${blogs[0].title} ${blogs[0].author}`).should('not.exist')
+
+            })
+
+            it('cant remove a blog by other user',  function() {
+                cy.request('POST', 'http://localhost:3003/api/login/', {username: users[1].username, password: users[1].password}).then(
+                   ({body}) => {
+                        localStorage.setItem('user', JSON.stringify(body))
+                        cy.visit('http://localhost:3000')
+                        cy.createBlog(blogs[1])
+                        cy.visit('http://localhost:3000')
+                        cy.contains('logout').click()
+                        cy.request('POST', 'http://localhost:3003/api/login/', {username: users[0].username, password: users[0].password}).then(
+                            ({body}) => {
+                                 localStorage.setItem('user', JSON.stringify(body))
+                                 cy.visit('http://localhost:3000')
+                                 cy.contains(`${blogs[1].title} ${blogs[1].author}`).contains("view").click()
+                                 cy.contains(`${blogs[1].url}`).parent().as("blogToBeRemoved")
+                                 cy.get("@blogToBeRemoved").contains("remove").should('not.exist')
+                                 
+                             }
+                         )
+                    }
+                )
+              
+                
+               
+                
+               
+
+               
 
             })
         })
