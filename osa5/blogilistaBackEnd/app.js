@@ -19,6 +19,7 @@ app.use(tokenExtractor)
 app.use(userExtractor)
 
 if (process.env.NODE_ENV === 'test') {
+    console.log("TESTING API ROUTE ENABLED")
     const testingRouter = require('./controllers/testing')
     app.use('/api/testing', testingRouter)
 }
