@@ -1,3 +1,4 @@
+import { func } from "prop-types"
 
 describe('Blog app', function() {
     const users = [
@@ -54,6 +55,28 @@ describe('Blog app', function() {
                 cy.contains('placeholder name logged in')
                 cy.contains('logout')
                 cy.contains('add new blog')
+                cy.get('#logout').click()
+            })
+        })
+
+        describe('when logged in', function() {
+            beforeEach( async function () {
+                const response = await cy.request('POST', 'http://localhost:3003/api/login/', {username: users[0].username, password: users[0].password})
+                localStorage.setItem('user', JSON.stringify(response.body))
+                cy.visit('http://localhost:3000')
+
+            })
+
+            it('a blog can be created', function () {
+                cy.contains("add new blog").click()
+                cy.get("#createBlogTitle").type("cypress title test")
+                cy.get("#createBlogAuthor").type("cypress Author test")
+                cy.get("#createBlogUrl").type("cypress Url test")
+                cy.contains("create blog").click()
+                cy.contains("blogs")
+                cy.contains("cypress title test cypress Author test")
+                cy.contains("view")
+
             })
         })
    
