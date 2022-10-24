@@ -47,7 +47,7 @@ const Blog = ({ blog, handleLike, handleRemoval, user }) => {
     </div>
   )
   return(
-    <div style={blogStyle}>
+    <div className="blog" style={blogStyle}>
       {
         !fullViewVisible ?
           preView()

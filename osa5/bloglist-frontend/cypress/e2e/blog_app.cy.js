@@ -63,7 +63,11 @@ describe('Blog app', function() {
            
 
             beforeEach(function () {
-               
+                cy.request('POST', 'http://localhost:3003/api/testing/reset')
+                cy.request('POST', 'http://localhost:3003/api/users/', users[0])
+                cy.request('POST', 'http://localhost:3003/api/users/', users[1])
+                cy.visit('http://localhost:3000')
+
                 cy.request('POST', 'http://localhost:3003/api/login/', {username: users[0].username, password: users[0].password}).then(
                    ({body}) => {
                         localStorage.setItem('user', JSON.stringify(body))
@@ -134,20 +138,51 @@ describe('Blog app', function() {
                                  cy.contains(`${blogs[1].title} ${blogs[1].author}`).contains("view").click()
                                  cy.contains(`${blogs[1].url}`).parent().as("blogToBeRemoved")
                                  cy.get("@blogToBeRemoved").contains("remove").should('not.exist')
-                                 
                              }
                          )
                     }
                 )
-              
-                
-               
-                
-               
-
-               
 
             })
+
+            it('blogs are sorted by likes correctly',  function() {
+                cy.request('POST', 'http://localhost:3003/api/login/', {username: users[1].username, password: users[1].password}).then(
+                   ({body}) => {
+                        localStorage.setItem('user', JSON.stringify(body))
+                        cy.visit('http://localhost:3000')   
+                        cy.createBlog({title: "most", likes: 2, url: "test url", author: "author"})
+                        cy.createBlog({title: "least", likes: 0, url: "url", author: "other"})
+                        cy.visit('http://localhost:3000')
+                        
+                        cy.get(".blog").eq(0).should('contain', "most")
+                        cy.get(".blog").eq(1).should('contain', "least")
+
+                        cy.contains("least").parent().contains("view").click()
+                        cy.contains("least").parent().contains("like").click()
+                        cy.wait(500)
+
+                       
+                        cy.contains("least").parent().contains("like").click()
+                        cy.wait(500)
+
+                        cy.contains("least").parent().contains("like").click()
+                        cy.wait(500)
+                        
+                        cy.get(".blog").eq(0).should('contain', "least")
+                        cy.get(".blog").eq(1).should('contain', "most")
+
+                       
+
+                      
+
+                        
+
+                    }
+                )
+
+            })
+
+
         })
    
     })
