@@ -36,7 +36,7 @@ const CreateBlogs = ({ createBlog }) => {
 }
 
 CreateBlogs.propTypes = {
-  createBlog: PropTypes.func.isRequired,
+  createBlog: PropTypes.func.isRequired
 }
 
 export default CreateBlogs
