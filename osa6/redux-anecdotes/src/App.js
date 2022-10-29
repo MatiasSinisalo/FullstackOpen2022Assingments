@@ -3,14 +3,41 @@ import { useSelector, useDispatch } from 'react-redux'
 const App = () => {
   const anecdotes = useSelector(state => state)
   const dispatch = useDispatch()
+  
+  
+  const createAnecdote = (newAnecdote) => {
+    return{
+      type: 'create', data: {anecdote: newAnecdote}
+    }
+  }
+
+  const voteAnecdote = (id) => {
+    return {
+      type: 'vote', data: {id: id}
+    }
+  }
 
   const vote = (id) => {
     console.log('vote', id)
-    dispatch({type: 'vote', data: {id: id}})
+    dispatch(voteAnecdote(id))
   }
+
+  const createNewAnecdote = (event) => {
+    event.preventDefault()
+    console.log('create: ', event.target.anecdote.value)
+    dispatch(createAnecdote(event.target.anecdote.value))
+  }
+
 
   return (
     <div>
+      <h2>Create a new anecdote</h2>
+      <form onSubmit={createNewAnecdote}>
+        anecdote<input name="anecdote" type="text"></input>
+        <button type="submit">create</button>
+      </form>
+
+
       <h2>Anecdotes</h2>
       {anecdotes.map(anecdote =>
         <div key={anecdote.id}>
