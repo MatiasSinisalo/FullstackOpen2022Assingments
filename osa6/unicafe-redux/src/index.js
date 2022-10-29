@@ -11,6 +11,23 @@ const App = () => {
       type: 'GOOD'
     })
   }
+  const bad = () => {
+    store.dispatch({
+      type: 'BAD'
+    })
+  }
+
+  const ok = () => {
+    store.dispatch({
+      type: 'OK'
+    })
+  }
+
+  const zero = () => {
+    store.dispatch({
+      type: 'ZERO'
+    })
+  }
 
   return (
     <div>

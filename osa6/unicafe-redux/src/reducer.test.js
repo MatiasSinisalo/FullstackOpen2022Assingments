@@ -67,11 +67,17 @@ describe('unicafe reducer', () => {
   })
 
 
-  test('zero does not change any state', () => {
+  test('zero resets the ratings', () => {
+    const startState = {
+      good: 1,
+      bad: 1,
+      ok: 1
+    }
+   
     const action = {
       type: 'ZERO'
     }
-    const state = initialState
+    const state = startState
 
     deepFreeze(state)
     const newState = counterReducer(state, action)
