@@ -26,29 +26,16 @@ const reducer = (state = initialState, action) => {
   switch (action.type){
     case 'vote':
       const updatedAnecdotes = state.map(anecdote => anecdote.id === action.data.id ? {...anecdote, votes : anecdote.votes + 1} : anecdote)
+      .sort((a, b) => {return b.votes - a.votes})
       console.log(updatedAnecdotes)
       state = updatedAnecdotes
-  
+
       return state
     case 'create':
       return state.concat(asObject(action.data.anecdote))
     default:
       return state
   }
-
-
-
-
-  if(action.type === 'vote'){
-    const updatedAnecdotes = state.map(anecdote => anecdote.id === action.data.id ? {...anecdote, votes : anecdote.votes + 1} : anecdote)
-    console.log(updatedAnecdotes)
-    state = updatedAnecdotes
-
-    return state
-  }
-
-
-  return state
 }
 
 export default reducer
