@@ -12,6 +12,7 @@ const notificationSlice = createSlice({
         setNotification(state, action){
             const newNotification = action.payload
             state = newNotification
+            return state
         }
     }
 })
