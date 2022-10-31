@@ -17,10 +17,8 @@ const AnecdoteForm = () => {
       
         dispatch(createAndSaveAnecdote(newAnecdote))
     
-        dispatch(setNotification(`you created ${newAnecdote.content}`))
-        setTimeout(() => {
-            dispatch(setNotification(``))
-        }, 5000);
+        dispatch(setNotification(`you created ${newAnecdote.content}`, 5))
+        
     }
   
     return (
