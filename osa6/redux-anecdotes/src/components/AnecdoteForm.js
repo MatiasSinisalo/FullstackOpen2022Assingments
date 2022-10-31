@@ -15,10 +15,10 @@ const AnecdoteForm = () => {
           votes: 0
         }
 
-        const response = await anecdoteService.create(newAnecdote)
-        dispatch(createAnecdote(newAnecdote))
+        const createdAnecdote = await anecdoteService.create(newAnecdote)
+        dispatch(createAnecdote(createdAnecdote))
     
-        dispatch(setNotification(`you created ${newAnecdote}`))
+        dispatch(setNotification(`you created ${createdAnecdote.content}`))
         setTimeout(() => {
             dispatch(setNotification(``))
         }, 5000);

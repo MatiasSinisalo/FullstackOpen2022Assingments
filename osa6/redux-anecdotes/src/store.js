@@ -5,11 +5,6 @@ import filterReducer from './reducers/filterReducer'
 import anecdoteService from "./services/anecdoteService"
 
 const store = configureStore({reducer: {anecdotes: anecdoteReducer, notification: notificationReducer, filter: filterReducer}})
-anecdoteService.getAll().then(
-    anecdotes => {
-       store.dispatch(setAnecdotes(anecdotes))
-    }
-)
 
 
 export default store
