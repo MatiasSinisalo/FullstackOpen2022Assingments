@@ -66,13 +66,16 @@ const anecdoteReducer = createSlice( {
     },
     createAnecdote(state, action){
       console.log(action)
-      return state.concat(asObject(action.payload))
+      return state.concat(action.payload)
+    },
+    setAnecdotes(state, action){
+      return action.payload
     }
   }
 }
 
 )
 
-export const { voteAnecdote, createAnecdote } = anecdoteReducer.actions
+export const { voteAnecdote, createAnecdote, setAnecdotes } = anecdoteReducer.actions
 
 export default anecdoteReducer.reducer
