@@ -33,8 +33,7 @@ const anecdoteReducer = createSlice( {
       return state.concat(action.payload)
     },
     setAnecdotes(state, action){
-      
-      return action.payload
+      return action.payload.sort((a, b) => {return b.votes - a.votes})
     },
     
   }
