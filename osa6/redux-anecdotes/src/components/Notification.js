@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux'
 
 const Notification = (props) => {
  // const notification = useSelector(state => state.notification)
-  console.log(props.notification)
   const style = {
     border: 'solid',
     padding: 10,
@@ -18,7 +17,7 @@ const Notification = (props) => {
 
 const mapStateToProps = (state)  => {
   return {
-    notification: state.notification
+    notification: state.notification.content
   }
 }
 
