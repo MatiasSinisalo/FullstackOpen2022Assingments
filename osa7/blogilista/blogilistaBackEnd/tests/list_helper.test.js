@@ -1,11 +1,11 @@
-const listHelper = require('../utils/list_helper')
+const listHelper = require("../utils/list_helper");
 
-test('dummy returns 1', () => {
-  const blogs = []
+test("dummy returns 1", () => {
+  const blogs = [];
 
-  const result = listHelper.dummy(blogs)
-  expect(result).toBe(1)
-})
+  const result = listHelper.dummy(blogs);
+  expect(result).toBe(1);
+});
 
 const blogs = [
   {
@@ -14,7 +14,7 @@ const blogs = [
     author: "Michael Chan",
     url: "https://reactpatterns.com/",
     likes: 7,
-    __v: 0
+    __v: 0,
   },
   {
     _id: "5a422aa71b54a676234d17f8",
@@ -22,7 +22,7 @@ const blogs = [
     author: "Edsger W. Dijkstra",
     url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
     likes: 5,
-    __v: 0
+    __v: 0,
   },
   {
     _id: "5a422b3a1b54a676234d17f9",
@@ -30,7 +30,7 @@ const blogs = [
     author: "Edsger W. Dijkstra",
     url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
     likes: 12,
-    __v: 0
+    __v: 0,
   },
   {
     _id: "5a422b891b54a676234d17fa",
@@ -38,7 +38,7 @@ const blogs = [
     author: "Robert C. Martin",
     url: "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll",
     likes: 10,
-    __v: 0
+    __v: 0,
   },
   {
     _id: "5a422ba71b54a676234d17fb",
@@ -46,7 +46,7 @@ const blogs = [
     author: "Robert C. Martin",
     url: "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html",
     likes: 0,
-    __v: 0
+    __v: 0,
   },
   {
     _id: "5a422bc61b54a676234d17fc",
@@ -54,89 +54,92 @@ const blogs = [
     author: "Robert C. Martin",
     url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
     likes: 2,
-    __v: 0
-  }  
-]
+    __v: 0,
+  },
+];
 
 const listWithOneBlog = [
   {
-    _id: '5a422aa71b54a676234d17f8',
-    title: 'Go To Statement Considered Harmful',
-    author: 'Edsger W. Dijkstra',
-    url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+    _id: "5a422aa71b54a676234d17f8",
+    title: "Go To Statement Considered Harmful",
+    author: "Edsger W. Dijkstra",
+    url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
     likes: 5,
-    __v: 0
-  }
-]
+    __v: 0,
+  },
+];
 
-describe('total likes', () => {
-  test('of empty list is zero', () => {
-    const result = listHelper.totalLikes([])
-    expect(result).toBe(0)
-  })
+describe("total likes", () => {
+  test("of empty list is zero", () => {
+    const result = listHelper.totalLikes([]);
+    expect(result).toBe(0);
+  });
 
-  test('when list has only one blog equals the likes of that', () => {
-    const result = listHelper.totalLikes(listWithOneBlog)
-    expect(result).toBe(5)
-  })
+  test("when list has only one blog equals the likes of that", () => {
+    const result = listHelper.totalLikes(listWithOneBlog);
+    expect(result).toBe(5);
+  });
 
-  test('of a bigger list is calculated right', () => {
-    const result = listHelper.totalLikes(blogs)
-    expect(result).toBe(36)
-  })
-})
+  test("of a bigger list is calculated right", () => {
+    const result = listHelper.totalLikes(blogs);
+    expect(result).toBe(36);
+  });
+});
 
-describe('most liked blog', () => {
-  test('of a empty list doesnt return a value', () => { 
-    const result = listHelper.favoriteBlog([])
-    expect(result).toBe(undefined)
-  })
-  test('when list has only one', () => { 
-    const result = listHelper.favoriteBlog(listWithOneBlog)
-    expect(result).toEqual({title: "Go To Statement Considered Harmful", author: "Edsger W. Dijkstra", likes: 5})
+describe("most liked blog", () => {
+  test("of a empty list doesnt return a value", () => {
+    const result = listHelper.favoriteBlog([]);
+    expect(result).toBe(undefined);
+  });
+  test("when list has only one", () => {
+    const result = listHelper.favoriteBlog(listWithOneBlog);
+    expect(result).toEqual({
+      title: "Go To Statement Considered Harmful",
+      author: "Edsger W. Dijkstra",
+      likes: 5,
+    });
+  });
+  test("of a bigger list is calculated right", () => {
+    const result = listHelper.favoriteBlog(blogs);
+    expect(result).toEqual({
+      title: "Canonical string reduction",
+      author: "Edsger W. Dijkstra",
+      likes: 12,
+    });
+  });
+});
 
-  })
-  test('of a bigger list is calculated right', () => { 
-    const result = listHelper.favoriteBlog(blogs)
-    expect(result).toEqual({title: "Canonical string reduction", author: "Edsger W. Dijkstra", likes: 12})
-  })
-})
+describe("author with most blogs", () => {
+  test("of a empty list returns empty author", () => {
+    const result = listHelper.mostBlogs([]);
+    expect(result).toEqual({ author: "", blogs: 0 });
+  });
 
-describe('author with most blogs', ()=> {
-  test('of a empty list returns empty author', () => { 
-    const result = listHelper.mostBlogs([])
-    expect(result).toEqual({author: "", blogs: 0})
-  })
+  test("when list has only one", () => {
+    const result = listHelper.mostBlogs(listWithOneBlog);
 
-  test('when list has only one', () => { 
-    const result = listHelper.mostBlogs(listWithOneBlog)
-   
-    expect(result).toEqual({author: "Edsger W. Dijkstra", blogs: 1})
-  })
-  
-  test('of a bigger list is calculated right', () => {
-    const result = listHelper.mostBlogs(blogs)
-    expect(result).toEqual({author: "Robert C. Martin", blogs: 3})
-  })
+    expect(result).toEqual({ author: "Edsger W. Dijkstra", blogs: 1 });
+  });
 
-})
+  test("of a bigger list is calculated right", () => {
+    const result = listHelper.mostBlogs(blogs);
+    expect(result).toEqual({ author: "Robert C. Martin", blogs: 3 });
+  });
+});
 
-describe('author with most likes',() => {
+describe("author with most likes", () => {
+  test("of a empty list returns empty author", () => {
+    const result = listHelper.mostLikes([]);
+    expect(result).toEqual({ author: "", likes: 0 });
+  });
 
-  test('of a empty list returns empty author', () => {
-    const result = listHelper.mostLikes([])
-    expect(result).toEqual({author: "", likes: 0})
-  })  
+  test("when list has only one", () => {
+    const result = listHelper.mostLikes(listWithOneBlog);
+    expect(result).toEqual({ author: "Edsger W. Dijkstra", likes: 5 });
+  });
 
-  test('when list has only one', () => {
-    const result = listHelper.mostLikes(listWithOneBlog)
-    expect(result).toEqual({author: "Edsger W. Dijkstra", likes: 5})
-  })  
-
-
-  test('of a bigger list is calculated right', () => {
-    const result = listHelper.mostLikes(blogs)
-    expect(result).toEqual({author: "Edsger W. Dijkstra", likes: 17})
-  })  
-})
-
+  test("of a bigger list is calculated right", () => {
+    const result = listHelper.mostLikes(blogs);
+    expect(result).toEqual({ author: "Edsger W. Dijkstra", likes: 17 });
+  });
+});

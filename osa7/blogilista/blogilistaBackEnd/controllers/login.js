@@ -1,51 +1,52 @@
-const jwt = require('jsonwebtoken')
-const bcrypt = require('bcrypt')
-const loginRouter = require('express').Router()
-const User = require('../models/user')
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const loginRouter = require("express").Router();
+const User = require("../models/user");
 
-loginRouter.post('/', async (request, response) => {
-    const {username, password} = request.body
+loginRouter.post("/", async (request, response) => {
+  const { username, password } = request.body;
 
-    if(!username){
-        return response.status(400).json({
-            error: "username missing"
-        })
-    }
+  if (!username) {
+    return response.status(400).json({
+      error: "username missing",
+    });
+  }
 
-    if(!password){
-        return  response.status(400).json({
-            error: "password missing"
-        })
-    }
+  if (!password) {
+    return response.status(400).json({
+      error: "password missing",
+    });
+  }
 
-    const user = await User.findOne({username})
-   
-    if(!user){
-        return response.status(400).json({
-            error: "invalid username or password"
-        })
-    }
+  const user = await User.findOne({ username });
 
-    const passwordCorrect = await bcrypt.compare(password, user.passwordHash)
-   
-    if(!passwordCorrect){
-        return response.status(401).json({
-            error: 'invalid username or password'
-        })
-    }
+  if (!user) {
+    return response.status(400).json({
+      error: "invalid username or password",
+    });
+  }
 
-    const userForToken = {
-        username: user.username,
-        id: user.id
-    }
+  const passwordCorrect = await bcrypt.compare(password, user.passwordHash);
 
-    const token = jwt.sign(userForToken, process.env.SECRET, {expiresIn: 60*60})
-    response.status(200).send({
-        token,
-        username: user.username,
-        name: user.name
-    })
-})
+  if (!passwordCorrect) {
+    return response.status(401).json({
+      error: "invalid username or password",
+    });
+  }
 
+  const userForToken = {
+    username: user.username,
+    id: user.id,
+  };
 
-module.exports = loginRouter
+  const token = jwt.sign(userForToken, process.env.SECRET, {
+    expiresIn: 60 * 60,
+  });
+  response.status(200).send({
+    token,
+    username: user.username,
+    name: user.name,
+  });
+});
+
+module.exports = loginRouter;
