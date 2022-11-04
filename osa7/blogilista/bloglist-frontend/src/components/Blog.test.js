@@ -1,114 +1,151 @@
-import React from 'react'
-import { render, screen } from '@testing-library/react'
-import '@testing-library/jest-dom/extend-expect'
-import Blog from './Blog'
-import userEvent from '@testing-library/user-event'
+import React from "react";
+import { render, screen } from "@testing-library/react";
+import "@testing-library/jest-dom/extend-expect";
+import Blog from "./Blog";
+import userEvent from "@testing-library/user-event";
 
-test('<Blog /> displays title and author when collapsed', async () => {
+test("<Blog /> displays title and author when collapsed", async () => {
+  render(
+    <Blog
+      blog={{ title: "test title", author: "test author", url: "test url" }}
+    />
+  );
 
-  render(<Blog blog={{ title: 'test title', author: 'test author', url: 'test url' }} />)
+  const blog = await screen.getByText("test title test author");
 
+  expect(blog).toBeDefined();
+});
 
-  const blog =  await screen.getByText('test title test author')
+test("<Blog /> doesnt display url when collapsed", async () => {
+  render(
+    <Blog
+      blog={{ title: "test title", author: "test author", url: "test url" }}
+    />
+  );
 
-  expect(blog).toBeDefined()
+  const expandedBlog = await screen.queryByText("test url");
+  expect(expandedBlog).toBeNull;
+});
 
-})
+test("<Blog /> doesnt display likes when collapsed", async () => {
+  render(
+    <Blog
+      blog={{ title: "test title", author: "test author", url: "test url" }}
+    />
+  );
 
-test('<Blog /> doesnt display url when collapsed', async () => {
+  const expandedBlog = await screen.queryByText("likes", { exact: false });
+  expect(expandedBlog).toBeNull;
+});
 
-  render(<Blog blog={{ title: 'test title', author: 'test author', url: 'test url' }} />)
+test("<Blog />  displays likes when not collapsed", async () => {
+  const blogUser = { username: "placeholder" };
+  render(
+    <Blog
+      blog={{
+        title: "test title",
+        author: "test author",
+        url: "test url",
+        user: blogUser,
+      }}
+      user={{ username: "placeholder" }}
+    />
+  );
 
+  const user = userEvent.setup();
+  const button = screen.getByText("view");
+  await user.click(button);
 
-  const expandedBlog = await screen.queryByText('test url')
-  expect(expandedBlog).toBeNull
-})
+  await screen.getByText("likes", { exact: false });
+});
 
-test('<Blog /> doesnt display likes when collapsed', async () => {
+test("<Blog />  displays url when not collapsed", async () => {
+  const blogUser = { username: "placeholder" };
+  render(
+    <Blog
+      blog={{
+        title: "test title",
+        author: "test author",
+        url: "test url",
+        user: blogUser,
+      }}
+      user={{ username: "placeholder" }}
+    />
+  );
 
-  render(<Blog blog={{ title: 'test title', author: 'test author', url: 'test url' }} />)
+  const user = userEvent.setup();
+  const button = screen.getByText("view");
+  await user.click(button);
 
+  await screen.getByText("test url");
+});
 
-  const expandedBlog = await screen.queryByText('likes', { exact: false })
-  expect(expandedBlog).toBeNull
-})
+test("<Blog />  displays author when not collapsed", async () => {
+  const blogUser = { username: "placeholder" };
+  render(
+    <Blog
+      blog={{
+        title: "test title",
+        author: "test author",
+        url: "test url",
+        user: blogUser,
+      }}
+      user={{ username: "placeholder" }}
+    />
+  );
 
+  const user = userEvent.setup();
+  const button = screen.getByText("view");
+  await user.click(button);
 
-test('<Blog />  displays likes when not collapsed', async () => {
+  await screen.getByText("test author");
+});
 
-  const blogUser = { username : 'placeholder' }
-  render(<Blog blog={{ title: 'test title', author: 'test author', url: 'test url', user: blogUser }} user={{ username: 'placeholder' }} />)
+test("<Blog />  displays title when not collapsed", async () => {
+  const blogUser = { username: "placeholder" };
+  render(
+    <Blog
+      blog={{
+        title: "test title",
+        author: "test author",
+        url: "test url",
+        user: blogUser,
+      }}
+      user={{ username: "placeholder" }}
+    />
+  );
 
-  const user = userEvent.setup()
-  const button = screen.getByText('view')
-  await user.click(button)
+  const user = userEvent.setup();
+  const button = screen.getByText("view");
+  await user.click(button);
 
-  await screen.getByText('likes', { exact: false })
+  await screen.getByText("test title");
+});
 
+test("<Blog />  when pressing like button 2 times the event handler gets called 2 times", async () => {
+  const mockHandler = jest.fn();
 
-})
+  const blogUser = { username: "placeholder" };
+  render(
+    <Blog
+      blog={{
+        title: "test title",
+        author: "test author",
+        url: "test url",
+        user: blogUser,
+      }}
+      user={{ username: "placeholder" }}
+      handleLike={mockHandler}
+    />
+  );
 
-test('<Blog />  displays url when not collapsed', async () => {
+  const user = userEvent.setup();
+  const button = screen.getByText("view");
+  await user.click(button);
 
-  const blogUser = { username : 'placeholder' }
-  render(<Blog blog={{ title: 'test title', author: 'test author', url: 'test url', user: blogUser }} user={{ username: 'placeholder' }} />)
+  const likeButton = screen.getByText("like");
+  await user.click(likeButton);
+  await user.click(likeButton);
 
-  const user = userEvent.setup()
-  const button = screen.getByText('view')
-  await user.click(button)
-
-  await screen.getByText('test url')
-
-
-})
-
-test('<Blog />  displays author when not collapsed', async () => {
-
-  const blogUser = { username : 'placeholder' }
-  render(<Blog blog={{ title: 'test title', author: 'test author', url: 'test url', user: blogUser }} user={{ username: 'placeholder' }} />)
-
-  const user = userEvent.setup()
-  const button = screen.getByText('view')
-  await user.click(button)
-
-  await screen.getByText('test author')
-
-
-})
-
-
-test('<Blog />  displays title when not collapsed', async () => {
-
-  const blogUser = { username : 'placeholder' }
-  render(<Blog blog={{ title: 'test title', author: 'test author', url: 'test url', user: blogUser }} user={{ username: 'placeholder' }} />)
-
-  const user = userEvent.setup()
-  const button = screen.getByText('view')
-  await user.click(button)
-
-  await screen.getByText('test title')
-
-
-})
-
-test('<Blog />  when pressing like button 2 times the event handler gets called 2 times', async () => {
-  const mockHandler = jest.fn()
-
-  const blogUser = { username : 'placeholder' }
-  render(<Blog blog={{ title: 'test title', author: 'test author', url: 'test url', user: blogUser }} user={{ username: 'placeholder' }} handleLike={mockHandler} />)
-
-  const user = userEvent.setup()
-  const button = screen.getByText('view')
-  await user.click(button)
-
-
-  const likeButton = screen.getByText('like')
-  await user.click(likeButton)
-  await user.click(likeButton)
-
-  expect(mockHandler.mock.calls).toHaveLength(2)
-
-
-})
-
-
+  expect(mockHandler.mock.calls).toHaveLength(2);
+});
