@@ -2,8 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   notification: {
-    message: "this message is set by the reducer",
-    style: "success",
+    message: "",
+    style: "",
   },
   timeutID: undefined,
 };
