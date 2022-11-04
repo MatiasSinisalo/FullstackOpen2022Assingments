@@ -8,21 +8,34 @@ import LoggedInView from "./components/loggedInView";
 import blogsService from "./services/blogs";
 import { useDispatch, useSelector } from "react-redux";
 import { setNotificationMessage } from "./reducers/notificationReducer";
-
+import {
+  addBlog,
+  modifyiSingleBlog,
+  setAllBlogs,
+  sortAllBlogs,
+  removeBlogFromStore,
+} from "./reducers/blogReducer";
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
+  // const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
 
   //const [notification, setNotification] = useState({ style: "", message: "" });
-  const dispatch = useDispatch()
-  
-  const reduxNotification = useSelector(state => state.notification)
+  const dispatch = useDispatch();
+
+  const reduxNotification = useSelector((state) => state.notification);
+  const reduxBlogs = useSelector((state) => state.blogs);
+
+  const setBlogs = (blogs) => {
+    dispatch(setAllBlogs(blogs));
+    dispatch(sortAllBlogs());
+  };
+
   const setNotification = (notification) => {
-    dispatch(setNotificationMessage(notification))
-  }
+    dispatch(setNotificationMessage(notification));
+  };
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -82,14 +95,6 @@ const App = () => {
     }, 5000);
   };
 
-  const refreshBlogs = async () => {
-    const updatedBlogs = await blogsService.getAll();
-    const sortedBlogs = updatedBlogs.sort((a, b) => {
-      return b.likes - a.likes;
-    });
-    setBlogs(sortedBlogs);
-  };
-
   const handleLike = async (blog) => {
     const modifiedBlogData = {
       likes: blog.likes + 1,
@@ -100,7 +105,10 @@ const App = () => {
       id: blog.id,
     };
     await blogsService.modifyi(modifiedBlogData);
-    await refreshBlogs();
+
+    //in the local storage we want to also store the entire user obj to the blog
+    dispatch(modifyiSingleBlog({ ...modifiedBlogData, user: blog.user }));
+    dispatch(sortAllBlogs());
   };
 
   const handleRemoval = async (blog) => {
@@ -109,7 +117,8 @@ const App = () => {
     );
     if (confirmRemoval === true) {
       await blogService.remove(blog);
-      await refreshBlogs();
+      dispatch(removeBlogFromStore(blog));
+      dispatch(sortAllBlogs());
     }
   };
   const createBlog = async (blog) => {
@@ -121,6 +130,9 @@ const App = () => {
     });
 
     if (response.blog) {
+      dispatch(addBlog({ ...response.blog, user: response.user }));
+      dispatch(sortAllBlogs());
+
       setNotification({
         style: "success",
         message: `Created a blog: ${response.blog.title} with author: ${response.blog.author}`,
@@ -129,9 +141,6 @@ const App = () => {
         setNotification({ style: "", message: "" });
       }, 5000);
     }
-
-    const newBlogs = await blogService.getAll();
-    setBlogs(newBlogs);
   };
 
   return (
@@ -148,7 +157,7 @@ const App = () => {
       ) : (
         <LoggedInView
           user={user}
-          blogs={blogs}
+          blogs={reduxBlogs}
           logOut={handleLogout}
           createBlog={createBlog}
           handleLike={handleLike}
