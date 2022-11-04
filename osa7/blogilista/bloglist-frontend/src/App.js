@@ -16,18 +16,21 @@ import {
   removeBlogFromStore,
 } from "./reducers/blogReducer";
 
+import { setUser } from "./reducers/userReducer";
+
 const App = () => {
   // const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
+  //const [user, setUser] = useState(null);
 
   //const [notification, setNotification] = useState({ style: "", message: "" });
   const dispatch = useDispatch();
 
   const reduxNotification = useSelector((state) => state.notification);
   const reduxBlogs = useSelector((state) => state.blogs);
-
+  const reduxUser = useSelector((state) => state.user);
+  
   const setBlogs = (blogs) => {
     dispatch(setAllBlogs(blogs));
     dispatch(sortAllBlogs());
@@ -47,7 +50,7 @@ const App = () => {
     if (userJSON) {
       const user = JSON.parse(userJSON);
       if (user) {
-        setUser(user);
+        dispatch(setUser(user));
         blogService.setToken(user.token);
       }
     }
@@ -69,7 +72,7 @@ const App = () => {
       });
 
     if (loginInfo) {
-      setUser(loginInfo);
+      dispatch(setUser(loginInfo));
       blogService.setToken(loginInfo.token);
       window.localStorage.setItem("user", JSON.stringify(loginInfo));
 
@@ -85,7 +88,7 @@ const App = () => {
 
   const handleLogout = (event) => {
     event.preventDefault();
-    setUser(null);
+    dispatch(setUser(null));
     window.localStorage.setItem("user", null);
     setPassword("");
     setUsername("");
@@ -146,7 +149,7 @@ const App = () => {
   return (
     <>
       <Notification notification={reduxNotification.notification} />
-      {user === null ? (
+      {reduxUser === null ? (
         <LoginForm
           username={username}
           password={password}
@@ -156,7 +159,7 @@ const App = () => {
         />
       ) : (
         <LoggedInView
-          user={user}
+          user={reduxUser}
           blogs={reduxBlogs}
           logOut={handleLogout}
           createBlog={createBlog}
