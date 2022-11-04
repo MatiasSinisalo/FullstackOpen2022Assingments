@@ -6,6 +6,9 @@ import Notification from "./components/Notification";
 import LoginForm from "./components/LoginForm";
 import LoggedInView from "./components/loggedInView";
 import blogsService from "./services/blogs";
+import { useDispatch, useSelector } from "react-redux";
+import { setNotificationMessage } from "./reducers/notificationReducer";
+
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -13,7 +16,13 @@ const App = () => {
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
 
-  const [notification, setNotification] = useState({ style: "", message: "" });
+  //const [notification, setNotification] = useState({ style: "", message: "" });
+  const dispatch = useDispatch()
+  
+  const reduxNotification = useSelector(state => state.notification)
+  const setNotification = (notification) => {
+    dispatch(setNotificationMessage(notification))
+  }
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -127,7 +136,7 @@ const App = () => {
 
   return (
     <>
-      <Notification notification={notification} />
+      <Notification notification={reduxNotification.notification} />
       {user === null ? (
         <LoginForm
           username={username}
