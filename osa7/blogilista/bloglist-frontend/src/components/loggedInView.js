@@ -7,7 +7,7 @@ import {
   Routes, Route, Link
 } from "react-router-dom"
 import Users from "../components/Users";
-
+import User from "./User";
 
 
 
@@ -47,7 +47,8 @@ const LoggedInView = ({
         <Route path="/users/" element={
            <Users/>
         }></Route>
-      
+
+        <Route path="/users/:id" element={<User/>}></Route>
       
       </Routes>
       </Router>

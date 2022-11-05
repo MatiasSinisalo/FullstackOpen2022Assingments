@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react"
 import usersService from "../services/users"
-
-const UserStatistic = ({name, blogCount}) => {
+import { Link } from "react-router-dom"
+const UserStatistic = ({id, name, blogCount}) => {
     return (
         <>
         <tr>
-            <td>{name}</td>
+            <td><Link to={`/users/${id}`}>{name}</Link></td>
             <td>{blogCount}</td>
         </tr>
         </>
@@ -41,7 +41,7 @@ const Users = () => {
                 
                 
                 {
-                    users.map(user => <UserStatistic key={user.id} name={user.name} blogCount={user.blogs.length}/>)
+                    users.map(user => <UserStatistic key={user.id} id={user.id} name={user.name} blogCount={user.blogs.length}/>)
                 }
                
                
