@@ -1,12 +1,7 @@
 import { useState } from "react";
-
+import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 const Blog = ({ blog, handleLike, handleRemoval, user }) => {
-  const [fullViewVisible, setFullViewVisible] = useState(false);
-
-  const toggleFullView = () => {
-    setFullViewVisible(!fullViewVisible);
-  };
-
   const increaseLikes = async () => {
     await handleLike(blog);
   };
@@ -22,41 +17,14 @@ const Blog = ({ blog, handleLike, handleRemoval, user }) => {
     marginBottom: 5,
   };
 
-  const preView = () => (
-    <div>
-      <h3>
-        {blog.title} {blog.author}{" "}
-        <button onClick={toggleFullView}>view</button>
-      </h3>
-    </div>
-  );
-
-  const fullView = () => (
-    <div>
-      <h3>
-        {blog.title} <button onClick={toggleFullView}>hide</button>
-      </h3>
-
-      <p>{blog.url}</p>
-
-      <p>
-        likes {blog.likes} <button onClick={increaseLikes}>like</button>{" "}
-      </p>
-
-      <p>
-        <b>{blog.author}</b>
-      </p>
-
-      {blog.user.username === user.username ? (
-        <button onClick={removeBlog}>remove</button>
-      ) : (
-        <></>
-      )}
-    </div>
-  );
   return (
     <div className="blog" style={blogStyle}>
-      {!fullViewVisible ? preView() : fullView()}
+      <div>
+      <h3>
+        <Link to={`/blogs/${blog.id}`}>{blog.title} by {blog.author}{" "}</Link>
+        
+      </h3>
+    </div>
     </div>
   );
 };

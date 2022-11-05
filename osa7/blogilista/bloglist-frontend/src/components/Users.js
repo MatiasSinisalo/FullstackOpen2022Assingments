@@ -17,9 +17,10 @@ const UserStatistic = ({id, name, blogCount}) => {
 const Users = () => {
     const [users, setUsers] = useState([])
 
+    
     useEffect(() => {
         async function getUsers(){
-            console.log("allUsers")
+            console.log("users view updated")
             const allUsers = await usersService.getAll()
             const sortedUsers = allUsers.sort((a, b) =>  b.blogs.length - a.blogs.length )
             setUsers(allUsers)

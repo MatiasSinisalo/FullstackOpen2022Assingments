@@ -8,6 +8,11 @@ import LoggedInView from "./components/loggedInView";
 import blogsService from "./services/blogs";
 import { useDispatch, useSelector } from "react-redux";
 import { setNotificationMessage } from "./reducers/notificationReducer";
+import CreateBlogs from "./components/CreateBlogs";
+import User from "./components/User";
+import Users from "./components/Users";
+import BlogFullView from "./components/BlogFullView";
+import Blogs from "./components/Blogs";
 import {
   addBlog,
   modifyiSingleBlog,
@@ -15,6 +20,10 @@ import {
   sortAllBlogs,
   removeBlogFromStore,
 } from "./reducers/blogReducer";
+import {
+  BrowserRouter as Router,
+  Routes, Route, Link
+} from "react-router-dom"
 
 import { setUser } from "./reducers/userReducer";
 
@@ -33,6 +42,7 @@ const App = () => {
   const reduxUser = useSelector((state) => state.user);
   
   const setBlogs = (blogs) => {
+    
     dispatch(setAllBlogs(blogs));
     dispatch(sortAllBlogs());
   };
@@ -42,8 +52,12 @@ const App = () => {
   };
 
   useEffect(() => {
+    console.log("app updated!")
     blogService.getAll().then((blogs) => setBlogs(blogs));
   }, []);
+
+
+
 
   useEffect(() => {
     const userJSON = window.localStorage.getItem("user");
@@ -99,32 +113,7 @@ const App = () => {
     }, 5000);
   };
 
-  const handleLike = async (blog) => {
-    const modifiedBlogData = {
-      likes: blog.likes + 1,
-      user: blog.user.id,
-      title: blog.title,
-      author: blog.author,
-      url: blog.url,
-      id: blog.id,
-    };
-    await blogsService.modifyi(modifiedBlogData);
-
-    //in the local storage we want to also store the entire user obj to the blog
-    dispatch(modifyiSingleBlog({ ...modifiedBlogData, user: blog.user }));
-    dispatch(sortAllBlogs());
-  };
-
-  const handleRemoval = async (blog) => {
-    const confirmRemoval = window.confirm(
-      `remove blog ${blog.title} by ${blog.author}?`
-    );
-    if (confirmRemoval === true) {
-      await blogService.remove(blog);
-      dispatch(removeBlogFromStore(blog));
-      dispatch(sortAllBlogs());
-    }
-  };
+ 
   const createBlog = async (blog) => {
     const response = await blogService.create(blog).catch((error) => {
       setNotification({ style: "error", message: error.message });
@@ -149,6 +138,8 @@ const App = () => {
 
   return (
     <>
+      <Router>
+        
         <Notification notification={reduxNotification.notification} />
         {reduxUser === null ? (
           <LoginForm
@@ -159,15 +150,19 @@ const App = () => {
             handleLogin={handleLogin}
           />
         ) : (
+          <>
               <LoggedInView
               user={reduxUser}
               blogs={reduxBlogs}
               logOut={handleLogout}
               createBlog={createBlog}
-              handleLike={handleLike}
-              handleRemoval={handleRemoval}
-            />
+              />
+
+       
+          </>
         )}
+       
+      </Router>
     </>
   );
 };

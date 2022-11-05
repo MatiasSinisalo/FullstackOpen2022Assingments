@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
-import Blogs from "../services/blogs"
+import Blogs from "../components/Blogs"
 import usersService from "../services/users"
 const User = () => {
 
@@ -11,8 +11,10 @@ const User = () => {
     useEffect(() => {
         async function fetchUser(){
             const thisPagesUser =  await usersService.getWithId(userId)
+            console.log(thisPagesUser)
             setUser(thisPagesUser)
         }
+        console.log("user view updated")
         fetchUser()
     }, [])
    
@@ -22,11 +24,7 @@ const User = () => {
 
         <h3>added blogs</h3>
         <div>
-            <ul>
-                {
-                    user.blogs.map(blog => <li key={blog.id}>{blog.title}</li>)
-                }
-            </ul>
+           <Blogs filterByUserID = {user.id}></Blogs>
 
         </div>
         </>

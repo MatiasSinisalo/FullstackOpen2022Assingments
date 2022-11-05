@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-
+import blogService from "../services/blogs";
 const initialState = [];
 
 const blogReducer = createSlice({
@@ -36,7 +36,6 @@ const blogReducer = createSlice({
       return newState;
     },
     sortAllBlogs(state, action) {
-      console.log("sorted!");
       const newState = state.sort((a, b) => {
         return b.likes - a.likes;
       });
@@ -53,5 +52,38 @@ export const {
   modifyiSingleBlog,
   sortAllBlogs,
 } = blogReducer.actions;
+
+export const handleLike = (blog) => {
+
+  return async dispatch => {
+  const modifiedBlogData = {
+    likes: blog.likes + 1,
+    user: blog.user.id,
+    title: blog.title,
+    author: blog.author,
+    url: blog.url,
+    id: blog.id,
+  };
+  await blogService.modifyi(modifiedBlogData);
+
+  //in the local storage we want to also store the entire user obj to the blog
+  dispatch(modifyiSingleBlog({ ...modifiedBlogData, user: blog.user }));
+  dispatch(sortAllBlogs());
+}
+};
+
+
+export const handleRemoval = (blog) => {
+  return async dispatch => {
+    const confirmRemoval = window.confirm(
+      `remove blog ${blog.title} by ${blog.author}?`
+    );
+    if (confirmRemoval === true) {
+      await blogService.remove(blog);
+      dispatch(removeBlogFromStore(blog));
+      dispatch(sortAllBlogs());
+    }
+  }
+};
 
 export default blogReducer.reducer;

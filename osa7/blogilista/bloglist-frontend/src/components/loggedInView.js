@@ -8,7 +8,8 @@ import {
 } from "react-router-dom"
 import Users from "../components/Users";
 import User from "./User";
-
+import BlogFullView from "./BlogFullView";
+import { useEffect } from "react";
 
 
 const LoggedInView = ({
@@ -16,42 +17,39 @@ const LoggedInView = ({
   user,
   logOut,
   createBlog,
-  handleLike,
-  handleRemoval,
 }) => {
+  useEffect(() => {
+    console.log("logged in view updated!")
+
+  }, [])
   return (
     <>
-    <Router>
+   
      
         <h2>{user.name} logged in</h2>
         <input id="logout" type="submit" onClick={logOut} value="logout"></input>
         <p></p>
 
-       
 
-       
-      <Routes>
+        <Routes>
+        <Route path="/users/:id" element={<User/>}></Route>
         
-        <Route path="" element={
+        <Route path="/users/" element={
+          <Users/>
+        }></Route>
+      
+        <Route path="/blogs/:id" element={<BlogFullView/>}></Route>
+      
+        <Route path="/" element={
           <>
             <CreateBlogs blogs={blogs} createBlog={createBlog} />
             <Blogs
             blogs={blogs}
-            handleLike={handleLike}
-            handleRemoval={handleRemoval}
             user={user}
           />
-         </>
+        </>
         }></Route>
-
-        <Route path="/users/" element={
-           <Users/>
-        }></Route>
-
-        <Route path="/users/:id" element={<User/>}></Route>
-      
-      </Routes>
-      </Router>
+    </Routes>
     </>
   );
 };
@@ -61,8 +59,6 @@ LoggedInView.propTypes = {
   user: PropTypes.object.isRequired,
   logOut: PropTypes.func.isRequired,
   createBlog: PropTypes.func.isRequired,
-  handleLike: PropTypes.func.isRequired,
-  handleRemoval: PropTypes.func.isRequired,
 };
 
 export default LoggedInView;
