@@ -45,6 +45,10 @@ const BlogFullView = () => {
             </p>
 
             <p>
+                <a href={blog.url}>{blog.url}</a>
+            </p>
+
+            <p>
                 <b>{blog.author}</b>
             </p>
 
