@@ -2,6 +2,15 @@ import CreateBlogs from "./CreateBlogs";
 import Blogs from "./Blogs";
 import PropTypes from "prop-types";
 
+import {
+  BrowserRouter as Router,
+  Routes, Route, Link
+} from "react-router-dom"
+import Users from "../components/Users";
+
+
+
+
 const LoggedInView = ({
   blogs,
   user,
@@ -12,18 +21,36 @@ const LoggedInView = ({
 }) => {
   return (
     <>
-      <h2>{user.name} logged in</h2>
-      <input id="logout" type="submit" onClick={logOut} value="logout"></input>
-      <p></p>
+    <Router>
+     
+        <h2>{user.name} logged in</h2>
+        <input id="logout" type="submit" onClick={logOut} value="logout"></input>
+        <p></p>
 
-      <CreateBlogs blogs={blogs} createBlog={createBlog} />
+       
 
-      <Blogs
-        blogs={blogs}
-        handleLike={handleLike}
-        handleRemoval={handleRemoval}
-        user={user}
-      />
+       
+      <Routes>
+        
+        <Route path="" element={
+          <>
+            <CreateBlogs blogs={blogs} createBlog={createBlog} />
+            <Blogs
+            blogs={blogs}
+            handleLike={handleLike}
+            handleRemoval={handleRemoval}
+            user={user}
+          />
+         </>
+        }></Route>
+
+        <Route path="/users/" element={
+           <Users/>
+        }></Route>
+      
+      
+      </Routes>
+      </Router>
     </>
   );
 };

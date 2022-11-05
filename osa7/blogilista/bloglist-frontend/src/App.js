@@ -18,6 +18,7 @@ import {
 
 import { setUser } from "./reducers/userReducer";
 
+
 const App = () => {
   // const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
@@ -148,25 +149,25 @@ const App = () => {
 
   return (
     <>
-      <Notification notification={reduxNotification.notification} />
-      {reduxUser === null ? (
-        <LoginForm
-          username={username}
-          password={password}
-          setUsername={setUsername}
-          setPassword={setPassword}
-          handleLogin={handleLogin}
-        />
-      ) : (
-        <LoggedInView
-          user={reduxUser}
-          blogs={reduxBlogs}
-          logOut={handleLogout}
-          createBlog={createBlog}
-          handleLike={handleLike}
-          handleRemoval={handleRemoval}
-        />
-      )}
+        <Notification notification={reduxNotification.notification} />
+        {reduxUser === null ? (
+          <LoginForm
+            username={username}
+            password={password}
+            setUsername={setUsername}
+            setPassword={setPassword}
+            handleLogin={handleLogin}
+          />
+        ) : (
+              <LoggedInView
+              user={reduxUser}
+              blogs={reduxBlogs}
+              logOut={handleLogout}
+              createBlog={createBlog}
+              handleLike={handleLike}
+              handleRemoval={handleRemoval}
+            />
+        )}
     </>
   );
 };
