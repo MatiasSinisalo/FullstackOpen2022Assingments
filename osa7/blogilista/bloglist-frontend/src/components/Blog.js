@@ -15,7 +15,7 @@ const Blog = ({ blog, handleLike, handleRemoval, user }) => {
     <div className="blog">
       <div>
       <h3>
-        <h3>{blog.title}</h3> <p className="blogAuthorHighlight"> by {blog.author}</p>
+        {blog.title} <p className="blogAuthorHighlight"> by {blog.author}</p>
         
       </h3>
     </div>

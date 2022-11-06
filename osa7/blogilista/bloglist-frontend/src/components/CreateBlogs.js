@@ -61,11 +61,11 @@ const CreateBlogs = ({ createBlog }) => {
               ></input>
             </td>
           </tr>
-          <br></br>
-          <button type="submit" value="create blog">Create Blog</button>
-          </tbody>
-          </table>
           
+          </tbody>
+          
+          </table>
+          <button type="submit" value="create blog">Create Blog</button>
         </form>
         
       </Togglable>
