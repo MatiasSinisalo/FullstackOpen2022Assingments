@@ -5,7 +5,7 @@ const UserStatistic = ({id, name, blogCount}) => {
     return (
         <>
         <tr>
-            <td><Link to={`/users/${id}`}>{name}</Link></td>
+            <td><Link to={`/users/${id}`}><button className="userTableEntry">{name}</button></Link></td>
             <td>{blogCount}</td>
         </tr>
         </>
@@ -32,7 +32,7 @@ const Users = () => {
     
     return (
         <div>
-        <h3>Users</h3>
+        <h1>Users</h1>
         <table>
             <tbody>
                 <tr>
