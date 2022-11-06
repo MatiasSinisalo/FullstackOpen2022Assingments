@@ -20,9 +20,6 @@ const BlogFullView = () => {
   }
 
 
-  useEffect(() => {
-    console.log(blog)
-  }, [blog])
 
   const removeBlog = () => {
     dispatch(handleRemoval(blog))

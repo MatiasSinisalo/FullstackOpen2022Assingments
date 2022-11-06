@@ -6,25 +6,13 @@ import { useEffect, useState } from "react";
 import { handleRemoval } from "../reducers/blogReducer";
 
 
-const Blogs = ({filterByUserID}) => {
-  const dispatch = useDispatch()
-  const blogs = useSelector(state => state.blogs)
-  const user = useSelector(state=>state.user)
-
+const Blogs = ({blogs, user}) => {
   return (
     <>
       <h2>blogs</h2>
       {
-        filterByUserID !== undefined ?
-        blogs.filter(blog => {return blog.user.id === filterByUserID}).map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            handleRemoval={handleRemoval}
-            user={user}
-          />
-        ))
-        :
+       
+        
         blogs.map((blog) => (
           <Blog
             key={blog.id}
