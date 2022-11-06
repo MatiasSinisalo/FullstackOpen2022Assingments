@@ -27,7 +27,7 @@ const LoggedInView = ({
 
         <div className="userinfo">
           <p> <b>{user.name}</b> logged in</p>
-          <input className="logoutbutton" id="logout" type="submit" onClick={logOut} value="logout"></input>
+          <button className="logoutbutton" id="logout" type="submit" onClick={logOut} value="logout">log out</button>
         </div>
       
         </div>

@@ -1,3 +1,8 @@
+#root{
+  padding-left: 10vw;
+  padding-right: 10vw;
+}
+
 .error {
   color: red;
   background: lightgrey;
@@ -31,7 +36,38 @@
   justify-content: space-evenly;
 }
 
+.blog{
+  
+  border: solid;
+  border-width: 1px;
 
+  padding: 3px;
+
+  margin-bottom: 1vh;
+ 
+}
+
+
+
+.blog:hover{
+  
+  border: solid;
+  border-width: 3px;
+  background-color: lightblue;
+  padding: 3px;
+
+  margin-bottom: 1vh;
+ 
+}
+
+
+.blogAuthorHighlight{
+  font-size: 0.8em;
+}
+
+button{
+  color: blue;
+}
 
 .logoutbutton{
  margin: 10px;

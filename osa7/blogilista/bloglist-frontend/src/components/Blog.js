@@ -9,23 +9,18 @@ const Blog = ({ blog, handleLike, handleRemoval, user }) => {
   const removeBlog = async () => {
     await handleRemoval(blog);
   };
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: "solid",
-    borderWidth: 1,
-    marginBottom: 5,
-  };
-
+ 
   return (
-    <div className="blog" style={blogStyle}>
+    <Link to={`/blogs/${blog.id}`}>
+    <div className="blog">
       <div>
       <h3>
-        <Link to={`/blogs/${blog.id}`}>{blog.title} by {blog.author}{" "}</Link>
+        <h3>{blog.title}</h3> <p className="blogAuthorHighlight"> by {blog.author}</p>
         
       </h3>
     </div>
     </div>
+    </Link>
   );
 };
 
