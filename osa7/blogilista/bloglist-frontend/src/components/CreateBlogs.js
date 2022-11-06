@@ -15,38 +15,61 @@ const CreateBlogs = ({ createBlog }) => {
   };
 
   return (
-    <>
+    <div className="blogCreationSection">
       <Togglable buttonLabel="add new blog" ref={creationFormToggleRef}>
         <h2>create new</h2>
+       
         <form onSubmit={handleBlogCreation}>
-          title
-          <input
-            id="createBlogTitle"
-            type="text"
-            value={title}
-            onChange={({ target }) => setTitle(target.value)}
-          ></input>
+        <table>
+          <tbody>
+            <tr>
+              <td>
+                title
+            </td>
+            <td>
+              <input
+                id="createBlogTitle"
+                type="text"
+                value={title}
+                onChange={({ target }) => setTitle(target.value)}
+              ></input>
+            </td>
+          </tr>
+          <tr>
+          <td>
+            author
+          </td>
+          <td>
+            <input
+              id="createBlogAuthor"
+              type="text"
+              value={author}
+              onChange={({ target }) => setAuthor(target.value)}
+            ></input>
+          </td>
+          </tr>
+          <tr>
+            <td>
+              url
+            </td>
+            <td>
+              <input
+                id="createBlogUrl"
+                type="text"
+                value={url}
+                onChange={({ target }) => setUrl(target.value)}
+              ></input>
+            </td>
+          </tr>
           <br></br>
-          author
-          <input
-            id="createBlogAuthor"
-            type="text"
-            value={author}
-            onChange={({ target }) => setAuthor(target.value)}
-          ></input>
-          <br></br>
-          url
-          <input
-            id="createBlogUrl"
-            type="text"
-            value={url}
-            onChange={({ target }) => setUrl(target.value)}
-          ></input>
-          <br></br>
-          <input type="submit" value="create blog"></input>
+          <button type="submit" value="create blog">Create Blog</button>
+          </tbody>
+          </table>
+          
         </form>
+        
       </Togglable>
-    </>
+    </div>
   );
 };
 

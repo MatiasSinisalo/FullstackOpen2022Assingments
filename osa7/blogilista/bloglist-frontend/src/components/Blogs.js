@@ -8,7 +8,7 @@ import { handleRemoval } from "../reducers/blogReducer";
 
 const Blogs = ({blogs, user}) => {
   return (
-    <>
+    <div className="blogslist">
       <h2>blogs</h2>
       {
        
@@ -23,7 +23,7 @@ const Blogs = ({blogs, user}) => {
         ))
         
       }
-    </>
+    </div>
   );
 };
 

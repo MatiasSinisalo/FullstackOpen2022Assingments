@@ -13,6 +13,11 @@
   margin-bottom: 10px;
 }
 
+.blogCreationSection{
+  background-color: lightgray;
+  padding: 10px;
+}
+
 .success {
   color: green;
   background: lightgrey;
@@ -44,6 +49,7 @@
   padding: 3px;
 
   margin-bottom: 1vh;
+  background-color: white;
  
 }
 
@@ -113,6 +119,7 @@
 }
 
 button{
+  margin: 5px;
   color: blue;
   cursor: pointer;
 }
@@ -135,7 +142,13 @@ button{
  margin: 10px;
 }
 
-
+.blogslist{
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  background-color: darkgray;
+}
 table{
   border: 1px solid;
   padding: 10px;
@@ -157,3 +170,4 @@ td{
   background-color: lightblue;
  
 }
+

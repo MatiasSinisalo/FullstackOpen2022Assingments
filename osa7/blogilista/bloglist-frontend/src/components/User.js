@@ -25,9 +25,8 @@ const User = () => {
         {
             user !== undefined && blogs !== undefined ?
         <>
-            <h2>{user.name}</h2>
+            <h1>{user.name}</h1>
 
-            <h3>added blogs</h3>
             <div>
             <Blogs blogs = {userBlogs}></Blogs>
 
