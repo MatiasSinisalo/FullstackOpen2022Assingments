@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import blogService from "../services/blogs";
 import { modifyiSingleBlog, sortAllBlogs, removeBlogFromStore } from "../reducers/blogReducer";
 import { useEffect, useState } from "react";
-
+import { handleRemoval } from "../reducers/blogReducer";
 
 
 const Blogs = ({filterByUserID}) => {
@@ -11,15 +11,8 @@ const Blogs = ({filterByUserID}) => {
   const blogs = useSelector(state => state.blogs)
   const user = useSelector(state=>state.user)
 
-  const handleRemoval = async (blog) => {
-    const confirmRemoval = window.confirm(
-      `remove blog ${blog.title} by ${blog.author}?`
-    );
-    if (confirmRemoval === true) {
-      await blogService.remove(blog);
-      dispatch(removeBlogFromStore(blog));
-      dispatch(sortAllBlogs());
-    }
+  const removeBlog = async (blog) => {
+    dispatch(removeBlog(blog))
   };
 
 

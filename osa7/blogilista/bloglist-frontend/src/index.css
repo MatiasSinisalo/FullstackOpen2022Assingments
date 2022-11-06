@@ -17,3 +17,22 @@
   padding: 10px;
   margin-bottom: 10px;
 }
+
+
+.navbar{
+  background-color: lightgray;
+  display: flex;
+  justify-content: space-evenly;
+  margin-bottom: 3vh;
+}
+
+.userinfo{
+  display: flex;
+  justify-content: space-evenly;
+}
+
+
+
+.logoutbutton{
+ margin: 10px;
+}

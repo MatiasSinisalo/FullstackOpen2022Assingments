@@ -18,17 +18,20 @@ const LoggedInView = ({
   logOut,
   createBlog,
 }) => {
-  useEffect(() => {
-    console.log("logged in view updated!")
-
-  }, [])
+ 
   return (
     <>
-   
+        <div className="navbar">
+        <Link to="/"><p>blogs</p></Link>
+        <Link to="/users"><p>users</p></Link>
+
+        <div className="userinfo">
+          <p> <b>{user.name}</b> logged in</p>
+          <input className="logoutbutton" id="logout" type="submit" onClick={logOut} value="logout"></input>
+        </div>
+      
+        </div>
      
-        <h2>{user.name} logged in</h2>
-        <input id="logout" type="submit" onClick={logOut} value="logout"></input>
-        <p></p>
 
 
         <Routes>

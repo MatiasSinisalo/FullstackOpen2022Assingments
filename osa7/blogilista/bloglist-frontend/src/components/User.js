@@ -14,11 +14,12 @@ const User = () => {
             console.log(thisPagesUser)
             setUser(thisPagesUser)
         }
-        console.log("user view updated")
+        //console.log("user view updated")
         fetchUser()
     }, [])
    
     return (
+       
         <>
         <h2>{user.name}</h2>
 
@@ -28,6 +29,7 @@ const User = () => {
 
         </div>
         </>
+      
     )
 
 }

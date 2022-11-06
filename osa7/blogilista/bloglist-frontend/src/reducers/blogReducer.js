@@ -7,14 +7,14 @@ const blogReducer = createSlice({
   initialState,
   reducers: {
     addBlog(state, action) {
-      console.log(action.payload);
+     
       const newState = state.concat(action.payload);
       state = newState;
       return newState;
     },
     setAllBlogs(state, action) {
       state = action.payload;
-      console.log(action.payload);
+      
       return action.payload;
     },
     removeBlogFromStore(state, action) {
@@ -25,13 +25,13 @@ const blogReducer = createSlice({
       return newState;
     },
     modifyiSingleBlog(state, action) {
-      console.log(action.payload);
+     
       const id = action.payload.id;
       const modifiedBlogData = action.payload;
       const newState = state.map((blog) =>
         blog.id === id ? modifiedBlogData : blog
       );
-      console.log(newState);
+  
       state = newState;
       return newState;
     },

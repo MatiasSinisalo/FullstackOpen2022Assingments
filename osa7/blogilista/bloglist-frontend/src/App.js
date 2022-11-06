@@ -52,7 +52,7 @@ const App = () => {
   };
 
   useEffect(() => {
-    console.log("app updated!")
+    //console.log("app updated!")
     blogService.getAll().then((blogs) => setBlogs(blogs));
   }, []);
 
