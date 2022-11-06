@@ -60,6 +60,53 @@
  
 }
 
+.blogFullView{
+  border: solid;
+  border-width: 1px;
+  border-style: dotted;
+  padding: 5px;
+}
+
+.blogLikes{
+  border: solid;
+  border-width: 1px;
+  padding: 10px;
+  width: fit-content;
+  font-size: 1.1em;
+  
+}
+
+.likeButton{
+  color: green;
+}
+
+.fullBlogContent{
+  margin-bottom: 10vh;
+}
+
+.likeButton:hover{
+  background-color: lightgreen; 
+}
+
+.likeButton:active{
+  background-color: green;
+  
+}
+
+.removeBlogButton{
+  margin: 5px;
+  color: black;
+  border-color: red;
+  border-width: 3px;
+}
+
+.removeBlogButton:hover{
+  
+  margin: 3px;
+  color: black;
+  border-color: red;
+  border-width: 5px;
+}
 
 .blogAuthorHighlight{
   font-size: 0.8em;
@@ -67,7 +114,22 @@
 
 button{
   color: blue;
+  cursor: pointer;
 }
+
+
+.commentsSection{
+  padding: 10px;
+  margin: 5px;
+  background-color: lightgray;
+}
+
+.singleComment{
+  background-color: white;
+  margin: 10px;
+  padding: 10px;
+}
+
 
 .logoutbutton{
  margin: 10px;

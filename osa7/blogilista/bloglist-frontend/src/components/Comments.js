@@ -8,13 +8,6 @@ const Comments = ({blogComments, id}) => {
        
         setComments(blogComments)
     }, [])
-
-    useEffect(() => {
-        console.log(blogComments)
-    }, [blogComments])
-
-
-
     
     const addLocalComment = (comment) => {
         setComments(comments.concat(comment))
@@ -22,13 +15,17 @@ const Comments = ({blogComments, id}) => {
 
     return(
         <>
-            <CreateComment id = {id} addLocalComment = {addLocalComment}/>
-            <p>Comments</p>
+           
+          <div className="commentsSection">
+            <h3>Comments</h3>
+            <CreateComment id = {id} addLocalComment = {addLocalComment}/> 
             <ul>
             {
-               comments !== undefined ? comments.map(comment => (<li key={comment.id}>{comment.content}</li>)) : <p>no comments</p>
+               comments !== undefined ? comments.map(comment => (<li className="singleComment" key={comment.id}>{comment.content}</li>)) : <p>no comments</p>
             }
+           
             </ul>
+          </div>
         </>
     )
 }

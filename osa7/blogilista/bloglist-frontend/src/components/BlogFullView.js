@@ -27,35 +27,35 @@ const BlogFullView = () => {
   }
   return(
    
-    <div>
+    <div className="blogFullView">
     {
         blog !== undefined ?
             <>
-                <h3>
-                {blog.title}
-                </h3>
+            <div className="fullBlogContent">
+                    <h1>
+                    {blog.title}
+                    </h1>
 
-            <p>{blog.url}</p>
+                <div className="blogLikes">
+                <p>
+                    likes {blog.likes} <button className="likeButton" onClick={increaseLikes}>like</button>{" "}
+                </p>
+                </div>
+                <p className="blogUrl">
+                    <a href={blog.url}>{blog.url}</a>
+                </p>
 
-            <p>
-                likes {blog.likes} <button onClick={increaseLikes}>like</button>{" "}
-            </p>
+                <div className="blogAuthorShowCase">
+                    <h2>Author: {blog.author}</h2>
+                </div>
 
-            <p>
-                <a href={blog.url}>{blog.url}</a>
-            </p>
-
-            <p>
-                <b>{blog.author}</b>
-            </p>
-
-            {blog.user.username === user.username ? (
-                <button onClick={removeBlog}>remove</button>
-            ) 
-            : (
-                <></>
-            )}
-
+                {blog.user.username === user.username ? (
+                    <button className="removeBlogButton" onClick={removeBlog}>remove</button>
+                ) 
+                : (
+                    <></>
+                )}
+            </div>
           
             <Comments blogComments = {blog.comments} id = {blog.id}></Comments>
             
