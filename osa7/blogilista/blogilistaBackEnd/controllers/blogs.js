@@ -3,13 +3,19 @@ const Blog = require("../models/blog");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const { request } = require("../app");
-
+const Comment = require("../models/comment")
 blogsRouter.get("/", async (request, response) => {
-  const blogs = await Blog.find({}).populate("user", {
+  const blogs = await Blog.find({})
+  .populate("user", {
     username: 1,
     name: 1,
     id: 1,
-  });
+  })
+  .populate("comments", {
+    id: 1,
+    content: 1
+  })
+  ;
   return response.json(blogs);
 });
 
@@ -39,6 +45,7 @@ blogsRouter.post("/", async (request, response) => {
     user: user.id,
     likes: blog.likes,
     url: blog.url,
+    comments: []
   };
 
   const blogObject = new Blog(blogToSave);
@@ -64,6 +71,84 @@ blogsRouter.post("/", async (request, response) => {
       });
   }
 });
+
+blogsRouter.post("/:id/comments", async (request, response) => {
+  const blogId = request.params.id
+  const newComment = request.body.content;
+
+  if (!request.user) {
+    return response.status(401).json({ error: "Unauthorized" });
+  }
+  const user = request.user;
+
+  if (!newComment) {
+    return response.status(400).end();
+  }
+
+  const toBeCommentedBlog = await Blog.findById(blogId)
+
+  if(!toBeCommentedBlog){
+    return response
+      .status(404)
+      .json({
+        error:
+          "commented blog doesn't exist",
+      });
+  }
+
+
+  const toBeSavedComment = {
+    content : newComment,
+    commentedBlogId: blogId 
+  }
+
+  //save the comment to server
+  const commentObj = new Comment(toBeSavedComment)
+  const savedComment = await commentObj.save()
+
+  //save the comment ref to the blog
+  
+  if(toBeCommentedBlog.comments === undefined){
+    toBeCommentedBlog.comments = []
+  }
+
+  const newComments = toBeCommentedBlog.comments.concat(savedComment.id)
+  const commentedBlog = await Blog.findByIdAndUpdate(blogId, {comments: newComments}, {new: true})
+
+
+  if (commentedBlog) {
+    return response.status(201).json( savedComment );
+  } else {
+    return response
+      .status(404)
+      .json({
+        error:
+          "commented blog has already been removed from the database!",
+      });
+  }
+});
+
+
+blogsRouter.get("/:id/comments", async (request, response) => {
+  const blogId = request.params.id 
+  const comments = await Comment.find({commentedBlogId: blogId})
+
+  if (comments) {
+    return response.status(200).json({ comments: comments });
+  } else {
+    return response
+      .status(404)
+      .json({
+        error:
+          "blog has already been removed from the database!",
+      });
+  }
+});
+
+
+
+
+
 
 blogsRouter.put("/:id", async (request, response) => {
   const blog = request.body;

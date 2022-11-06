@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { handleLike, handleRemoval } from "../reducers/blogReducer";
 import { useEffect } from "react";
-
+import Comments from "./Comments";
 const BlogFullView = () => {
   const blogId = useParams().id
   
@@ -14,15 +14,15 @@ const BlogFullView = () => {
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
-
-
-    useEffect(() => {
-        console.log("Single blog view updated")
-    }, [])
-    
+   
   const increaseLikes = () => {
     dispatch(handleLike(blog))
   }
+
+
+  useEffect(() => {
+    console.log(blog)
+  }, [blog])
 
   const removeBlog = () => {
     dispatch(handleRemoval(blog))
@@ -54,9 +54,14 @@ const BlogFullView = () => {
 
             {blog.user.username === user.username ? (
                 <button onClick={removeBlog}>remove</button>
-            ) : (
+            ) 
+            : (
                 <></>
             )}
+
+          
+            <Comments blogComments = {blog.comments} id = {blog.id}></Comments>
+            
         </>
     :
     <></>

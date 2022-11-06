@@ -11,11 +11,6 @@ const Blogs = ({filterByUserID}) => {
   const blogs = useSelector(state => state.blogs)
   const user = useSelector(state=>state.user)
 
-  const removeBlog = async (blog) => {
-    dispatch(removeBlog(blog))
-  };
-
-
   return (
     <>
       <h2>blogs</h2>

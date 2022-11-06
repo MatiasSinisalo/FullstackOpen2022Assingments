@@ -22,7 +22,7 @@ import {
 } from "./reducers/blogReducer";
 import {
   BrowserRouter as Router,
-  Routes, Route, Link
+  Routes, Route, Link, useNavigate
 } from "react-router-dom"
 
 import { setUser } from "./reducers/userReducer";
@@ -33,14 +33,13 @@ const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   //const [user, setUser] = useState(null);
-
+  
   //const [notification, setNotification] = useState({ style: "", message: "" });
   const dispatch = useDispatch();
-
   const reduxNotification = useSelector((state) => state.notification);
   const reduxBlogs = useSelector((state) => state.blogs);
   const reduxUser = useSelector((state) => state.user);
-  
+  const navigate = useNavigate()
   const setBlogs = (blogs) => {
     
     dispatch(setAllBlogs(blogs));
@@ -90,7 +89,8 @@ const App = () => {
       dispatch(setUser(loginInfo));
       blogService.setToken(loginInfo.token);
       window.localStorage.setItem("user", JSON.stringify(loginInfo));
-
+     
+      navigate("/")
       setNotification({
         style: "success",
         message: `logged in as ${loginInfo.name} `,
@@ -138,7 +138,7 @@ const App = () => {
 
   return (
     <>
-      <Router>
+     
         
         <Notification notification={reduxNotification.notification} />
         {reduxUser === null ? (
@@ -162,7 +162,7 @@ const App = () => {
           </>
         )}
        
-      </Router>
+      
     </>
   );
 };

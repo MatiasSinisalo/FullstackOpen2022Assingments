@@ -20,11 +20,11 @@ const Users = () => {
     
     useEffect(() => {
         async function getUsers(){
-            console.log("users view updated")
+          
             const allUsers = await usersService.getAll()
             const sortedUsers = allUsers.sort((a, b) =>  b.blogs.length - a.blogs.length )
             setUsers(allUsers)
-            console.log(allUsers)
+           
         }
         getUsers()
     }, [])

@@ -21,13 +21,20 @@ const User = () => {
     return (
        
         <>
-        <h2>{user.name}</h2>
+        {
+            user !== undefined ?
+        <>
+            <h2>{user.name}</h2>
 
-        <h3>added blogs</h3>
-        <div>
-           <Blogs filterByUserID = {user.id}></Blogs>
+            <h3>added blogs</h3>
+            <div>
+            <Blogs filterByUserID = {user.id}></Blogs>
 
-        </div>
+            </div>
+        </>
+        :
+        <></>
+        }
         </>
       
     )
