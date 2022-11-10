@@ -122,6 +122,11 @@ const typeDefs = gql`
       author: String!
       genres: [String!]!
     ):Book
+
+    editAuthor(
+      name: String!
+      setBornTo: Int!
+    ):Author
   }
 
   type Query {
@@ -167,6 +172,27 @@ const resolvers = {
       
 
       
+    },
+    editAuthor: (root, args) => {
+      const editInfo = {...args}
+
+      const knownAuthor = authors.filter((author) => author.name === editInfo.name)
+
+
+
+      if(knownAuthor[0] === undefined){
+        return null
+      }
+
+      const updatedList = authors.map((author) => author.name === editInfo.name ? {...author, born: editInfo.setBornTo} : author)
+
+      authors = updatedList
+
+      const editedAuthor = {...knownAuthor[0], born: editInfo.setBornTo}
+
+      return editedAuthor
+
+
     }
   },
   Author: {
@@ -177,6 +203,7 @@ const resolvers = {
   }
 
 }
+
 
 const server = new ApolloServer({
   typeDefs,
