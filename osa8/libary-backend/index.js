@@ -156,17 +156,17 @@ const typeDefs = gql`
 const resolvers = {
  
   Query: {
-    authorCount: () => authors.length,
+    authorCount: async() => {
+      const authors = await Author.find({})
+      return authors.length
+    },
     bookCount: async () => {
-      const books = await Books.find({})
+      const books = await Book.find({})
       return books.length
     },
     allBooks: async (root, args) => {
-       
-        
-        const books = await Book.find({})
-        console.log(books)  
-        const booksByAuthor = args.author !== undefined ? books.filter((book) => book.author === args.author) : books
+        const books = await Book.find({}).populate('author')
+        const booksByAuthor = args.author !== undefined ? books.filter((book) => book.author.name === args.author) : books
         const booksByGenre = args.genre !== undefined ? booksByAuthor.filter((book) => book.genres.filter((genre) => genre === args.genre).length > 0) : booksByAuthor
         return booksByGenre
     },
@@ -230,8 +230,9 @@ const resolvers = {
     }
   },
   Author: {
-    bookCount: (root) => {
-        return books.filter((book) => book.author === root.name).length
+    bookCount: async (root) => {
+        const books = await Book.find({author: root.id})
+        return books.length
     } 
 
   }
