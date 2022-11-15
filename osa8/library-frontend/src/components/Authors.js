@@ -6,7 +6,7 @@ const EditAuthorForm = (props) => {
 
 
   const [editAuthor] = useMutation(EDIT_AUTHOR, {refetchQueries: [ { query: ALL_AUTHORS } ]})
-
+  
   
 
   const editAuthorBornDate = async (event) => {
@@ -14,6 +14,7 @@ const EditAuthorForm = (props) => {
 
     const name = event.target.name.value
     const born = event.target.born.value
+
     console.log(event.target.name.value)
     await editAuthor({variables: {name: name, setBornTo: Number(born)}})
 
@@ -25,7 +26,7 @@ const EditAuthorForm = (props) => {
 
   return(
     <form onSubmit={editAuthorBornDate}>
-     <select>
+     name:<select name="name">
               
         {
           
@@ -40,8 +41,6 @@ const EditAuthorForm = (props) => {
        <></>
       }
          </select>
-      <br></br>
-      name: <input type="text" name="name"></input>
       <br></br>
       born: <input type="number" name ="born"></input>
       <br></br>
