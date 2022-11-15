@@ -207,26 +207,19 @@ const resolvers = {
 
       
     },
-    editAuthor: (root, args) => {
-      const editInfo = {...args}
-
-      const knownAuthor = authors.filter((author) => author.name === editInfo.name)
+    editAuthor: async (root, args) => {
+      const author =  await Author.findOne({name: args.name})
 
 
 
-      if(knownAuthor[0] === undefined){
+      if(author === undefined){
         return null
       }
-
-      const updatedList = authors.map((author) => author.name === editInfo.name ? {...author, born: editInfo.setBornTo} : author)
-
-      authors = updatedList
-
-      const editedAuthor = {...knownAuthor[0], born: editInfo.setBornTo}
-
-      return editedAuthor
-
-
+     
+      const updatedAuthor = await Author.findByIdAndUpdate(author.id, {born: args.setBornTo}, {new: true})
+      console.log(updatedAuthor)
+      
+      return updatedAuthor
     }
   },
   Author: {
