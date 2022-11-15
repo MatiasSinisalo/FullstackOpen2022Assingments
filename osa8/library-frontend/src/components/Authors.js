@@ -4,8 +4,10 @@ import { ALL_AUTHORS, EDIT_AUTHOR } from '../GraphQLqueries/authorQueries'
 
 const EditAuthorForm = (props) => {
 
+
   const [editAuthor] = useMutation(EDIT_AUTHOR, {refetchQueries: [ { query: ALL_AUTHORS } ]})
 
+  
 
   const editAuthorBornDate = async (event) => {
     event.preventDefault()
@@ -18,8 +20,27 @@ const EditAuthorForm = (props) => {
     console.log("edited author")
   }
 
+
+  
+
   return(
     <form onSubmit={editAuthorBornDate}>
+     <select>
+              
+        {
+          
+          props.authors !== undefined ?
+          
+          props.authors.map((author) => 
+            <option key={author.name} value={author.name}>{author.name}</option>
+          )
+              
+       
+        :
+       <></>
+      }
+         </select>
+      <br></br>
       name: <input type="text" name="name"></input>
       <br></br>
       born: <input type="number" name ="born"></input>
@@ -67,7 +88,7 @@ const Authors = (props) => {
         </tbody>
       </table>
     </div>
-    <EditAuthorForm/>
+    <EditAuthorForm authors={authors}/>
     </>
   )
 }
