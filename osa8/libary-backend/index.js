@@ -1,5 +1,5 @@
 require("dotenv").config()
-const { ApolloServer, gql } = require('apollo-server')
+const { ApolloServer, gql, UserInputError } = require('apollo-server')
 const { UniqueDirectiveNamesRule } = require('graphql');
 const { mongoose } = require('mongoose');
 const { v4: uuid } = require('uuid');
@@ -189,20 +189,34 @@ const resolvers = {
         
         }
        
-        const authorObj = Author(newAuthor)
-        const savedAuthor = await authorObj.save()
-        
+       
+        try{
+          const authorObj = Author(newAuthor)
+          const savedAuthor = await authorObj.save()
+        }
+        catch(error){
+          throw new UserInputError(error.message, {
+            invalidArgs: args,
+          })
+        }
         author = {...savedAuthor}
       }
       
       const bookToSave = {...book, author: author}
      
-      const bookObj = Book(bookToSave)
+     
+      try{
+        const bookObj = Book(bookToSave)
+        let returnedBook = await bookObj.save()
+        return returnedBook
+      }
+      catch(error){
+        throw new UserInputError(error.message, {
+          invalidArgs: args,
+        })
+      }
     
-      let returnedBook = await bookObj.save()
-      
-    
-      return returnedBook
+     
       
 
       
@@ -215,11 +229,19 @@ const resolvers = {
       if(author === undefined){
         return null
       }
-     
-      const updatedAuthor = await Author.findByIdAndUpdate(author.id, {born: args.setBornTo}, {new: true})
-      console.log(updatedAuthor)
       
+      try{
+      const updatedAuthor = await Author.findByIdAndUpdate(author.id, {born: args.setBornTo}, {new: true})
       return updatedAuthor
+      }
+      catch(error){
+        throw new UserInputError(error.message, {
+          invalidArgs: args,
+        })
+      }
+     
+      
+      
     }
   },
   Author: {
