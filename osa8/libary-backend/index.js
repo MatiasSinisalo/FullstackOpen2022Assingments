@@ -1,8 +1,18 @@
+require("dotenv").config()
 const { ApolloServer, gql } = require('apollo-server')
-const { UniqueDirectiveNamesRule } = require('graphql')
+const { UniqueDirectiveNamesRule } = require('graphql');
+const { mongoose } = require('mongoose');
 const { v4: uuid } = require('uuid');
 
-let authors = [
+const Author = require('./models/author')
+const Book = require('./models/book')
+
+let url = process.env.MONGODB_URI
+mongoose.connect(url)
+
+
+
+let authorsDepricated = [
   {
     name: 'Robert Martin',
     id: "afa51ab0-344d-11e9-a414-719c6709cf3e",
@@ -28,6 +38,8 @@ let authors = [
   },
 ]
 
+
+
 /*
  * Suomi:
  * Saattaisi olla järkevämpää assosioida kirja ja sen tekijä tallettamalla kirjan yhteyteen tekijän nimen sijaan tekijän id
@@ -42,7 +54,7 @@ let authors = [
  * Sin embargo, por simplicidad, almacenaremos el nombre del autor en conección con el libro
 */
 
-let books = [
+let booksDepricated = [
   {
     title: 'Clean Code',
     published: 2008,
@@ -107,13 +119,13 @@ const typeDefs = gql`
     bookCount: Int
  }
 
-  type Book {
-    title: String!
-    published: Int!
-    author: String!
-    id: ID!
-    genres: [String!]!
-  }
+ type Book {
+  title: String!
+  published: Int!
+  author: Author!
+  genres: [String!]!
+  id: ID!
+}
 
   type Mutation{
     addBook(
@@ -140,35 +152,57 @@ const typeDefs = gql`
 
 `
 
+
 const resolvers = {
+ 
   Query: {
     authorCount: () => authors.length,
-    bookCount: () => books.length,
-    allBooks: (root, args) => {
+    bookCount: async () => {
+      const books = await Books.find({})
+      return books.length
+    },
+    allBooks: async (root, args) => {
+       
+        
+        const books = await Book.find({})
+        console.log(books)  
         const booksByAuthor = args.author !== undefined ? books.filter((book) => book.author === args.author) : books
         const booksByGenre = args.genre !== undefined ? booksByAuthor.filter((book) => book.genres.filter((genre) => genre === args.genre).length > 0) : booksByAuthor
         return booksByGenre
     },
-    allAuthors: () => authors,
+    allAuthors: async() => {
+      const authors = Author.find({})
+      return authors
+    },
 
   },
   Mutation: {
-    addBook: (root, args) => {
-      const book = {...args, id: uuid()}
-
-      const knownAuthor = authors.filter((author) => author.name === book.author)
+    addBook: async (root, args) => {
+      const book = {...args}
       
-      if(knownAuthor[0] === undefined){
+      let author = await Author.findOne({name: book.author})//authors.filter((author) => author.name === book.author)
+    
+      if(author === null){
         const newAuthor = {
           name: book.author,
           born: null,
-          id: uuid()
+        
         }
-        authors = authors.concat(newAuthor)
+       
+        const authorObj = Author(newAuthor)
+        const savedAuthor = await authorObj.save()
+        
+        author = {...savedAuthor}
       }
       
-      books = books.concat(book)
-      return book
+      const bookToSave = {...book, author: author}
+     
+      const bookObj = Book(bookToSave)
+    
+      let returnedBook = await bookObj.save()
+      
+    
+      return returnedBook
       
 
       
