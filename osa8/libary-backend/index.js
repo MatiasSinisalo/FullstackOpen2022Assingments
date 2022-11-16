@@ -315,7 +315,9 @@ const resolvers = {
         return {value: token}
       }
 
-      return null
+      throw new UserInputError("Incorrect credentials", {
+        invalidArgs: "password or username are invalid",
+      })
     }
   },
   Author: {

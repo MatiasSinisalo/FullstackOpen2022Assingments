@@ -8,20 +8,26 @@ import { useMutation } from '@apollo/client'
 const App = () => {
   const [page, setPage] = useState('authors')
   const [login, result] = useMutation(LOGIN)
-  const [token, setToken] = useState(null)
   useEffect(() => {
     if(result.data){
-      setToken(result.data.login.value)
-      console.log(result.data.login.value)
+      console.log(result.data.login)
+      
+      localStorage.setItem('libaryUserToken', result.data.login.value)
     }
   }, [result.data])
 
 
-  const handleLogin = (event) => {
+  const handleLogin = async (event) => {
     event.preventDefault()
     const username = event.target.username.value
     const password = event.target.password.value
-    login({variables: {username, password}})
+    try{
+     await login({variables: {username, password}})
+    }
+    catch{
+      //TODO: notification for failing login
+      console.log("login failed")
+    }
   }
 
 
