@@ -1,10 +1,10 @@
 require("dotenv").config()
 const { ApolloServer, gql, UserInputError } = require('apollo-server')
-const { UniqueDirectiveNamesRule } = require('graphql');
-const { mongoose } = require('mongoose');
-const { v4: uuid } = require('uuid');
+const { UniqueDirectiveNamesRule } = require('graphql')
+const { mongoose } = require('mongoose')
+const { v4: uuid } = require('uuid')
 const bcrypt = require('bcrypt')
-
+const jwt = require("jsonwebtoken")
 const Author = require('./models/author')
 const Book = require('./models/book')
 const User = require('./models/user')
@@ -200,12 +200,21 @@ const resolvers = {
       const authors = Author.find({})
       return authors
     },
+    me: async(root, args, context) => {
+      return context.user
+    }
 
   },
   Mutation: {
-    addBook: async (root, args) => {
+    addBook: async (root, args, context) => {
+
+      if(context.user === undefined){
+        throw new UserInputError("Unauthorized", {
+          invalidArgs: args,
+        })
+      }
+
       const book = {...args}
-      
       let author = await Author.findOne({name: book.author})//authors.filter((author) => author.name === book.author)
     
       if(author === null){
@@ -248,15 +257,22 @@ const resolvers = {
 
       
     },
-    editAuthor: async (root, args) => {
+    editAuthor: async (root, args, context) => {
       const author =  await Author.findOne({name: args.name})
-
-
-
-      if(author === undefined){
-        return null
-      }
       
+      if(author === null){
+        throw new UserInputError("Author not found", {
+          invalidArgs: args,
+        })
+      }
+      console.log(context.user)
+      if(context.user === undefined){
+        throw new UserInputError("Unauthorized", {
+          invalidArgs: args,
+        })
+      }
+
+
       try{
       const updatedAuthor = await Author.findByIdAndUpdate(author.id, {born: args.setBornTo}, {new: true})
       return updatedAuthor
@@ -272,13 +288,34 @@ const resolvers = {
       const newUser = {...args, passwordHash: hashedPassword} //this is intenttionally hardcoded
     
      // console.log(newUser)
+     try{
       const newUserObj = User(newUser)
      // console.log(newUserObj)
       const response = await newUserObj.save()
       //console.log({username: response.username, favoriteGenre: response.favoriteGenre, id: response._id})
       return {username: response.username, favoriteGenre: response.favoriteGenre, id: response._id}
-     
-    
+     }
+     catch(error){
+      throw new UserInputError(error.message, {
+        invalidArgs: "password or username are invalid",
+      })
+     }
+    },
+    login: async (root, args) => {
+      const proposedPassword = args.password
+      const userToCompareTo =  await User.findOne({username: args.username})
+      const correct = await bcrypt.compare(proposedPassword, userToCompareTo.passwordHash)
+      if(correct){
+        
+        const tokenInfo = {
+          username: userToCompareTo.username,
+          id: userToCompareTo.id
+        }
+        const token = await jwt.sign(tokenInfo, process.env.SECRET)
+        return {value: token}
+      }
+
+      return null
     }
   },
   Author: {
@@ -295,6 +332,25 @@ const resolvers = {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: async ({ req }) => {
+    //the try catch is there because i dont want to show an error in a situtation where the token is given but it is not needed
+    //for example in the case of login and createuser
+    try{
+    const authorizationHeader = req.headers.authorization
+   
+    if (authorizationHeader && authorizationHeader.toLowerCase().startsWith('bearer ')) {
+      const token = jwt.verify(authorizationHeader.substring(7), process.env.SECRET)
+      const user = await User.findById(token.id)
+     
+      return { user }
+    }
+  }
+  catch{
+
+  }
+  
+  
+  }
 })
 
 server.listen().then(({ url }) => {
