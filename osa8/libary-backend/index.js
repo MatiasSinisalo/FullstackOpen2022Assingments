@@ -193,13 +193,14 @@ const resolvers = {
         try{
           const authorObj = Author(newAuthor)
           const savedAuthor = await authorObj.save()
+          author = {...savedAuthor}
         }
         catch(error){
           throw new UserInputError(error.message, {
             invalidArgs: args,
           })
         }
-        author = {...savedAuthor}
+        
       }
       
       const bookToSave = {...book, author: author}
