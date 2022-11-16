@@ -228,7 +228,12 @@ const resolvers = {
         try{
           const authorObj = Author(newAuthor)
           const savedAuthor = await authorObj.save()
-          author = {...savedAuthor}
+          author = {
+            name: savedAuthor.name,
+            born: savedAuthor.born,
+            id: savedAuthor._id, //id is needed if the request wants the id back from create book query
+            _id: savedAuthor.id //_id is needed for the bookToSave.save() to have the correct ref to author
+          }
         }
         catch(error){
           throw new UserInputError(error.message, {
@@ -239,23 +244,19 @@ const resolvers = {
       }
       
       const bookToSave = {...book, author: author}
-     
+      console.log(bookToSave)
      
       try{
         const bookObj = Book(bookToSave)
-        let returnedBook = await bookObj.save()
-        return returnedBook
+        const returnedBook = await bookObj.save()
+        console.log({...bookToSave, id: returnedBook._id})
+        return {...bookToSave, id: returnedBook._id}
       }
       catch(error){
         throw new UserInputError(error.message, {
           invalidArgs: args,
         })
       }
-    
-     
-      
-
-      
     },
     editAuthor: async (root, args, context) => {
       const author =  await Author.findOne({name: args.name})
