@@ -3,9 +3,11 @@ const { ApolloServer, gql, UserInputError } = require('apollo-server')
 const { UniqueDirectiveNamesRule } = require('graphql');
 const { mongoose } = require('mongoose');
 const { v4: uuid } = require('uuid');
+const bcrypt = require('bcrypt')
 
 const Author = require('./models/author')
 const Book = require('./models/book')
+const User = require('./models/user')
 
 let url = process.env.MONGODB_URI
 mongoose.connect(url)
@@ -127,6 +129,18 @@ const typeDefs = gql`
   id: ID!
 }
 
+type User {
+  username: String!
+  favoriteGenre: String!
+  id: ID!
+}
+
+type Token {
+  value: String!
+}
+
+
+
   type Mutation{
     addBook(
       title: String!
@@ -139,6 +153,17 @@ const typeDefs = gql`
       name: String!
       setBornTo: Int!
     ):Author
+
+
+    createUser(
+      username: String!
+      favoriteGenre: String!
+    ): User
+
+    login(
+      username: String!
+      password: String!
+    ): Token
   }
 
   type Query {
@@ -146,6 +171,7 @@ const typeDefs = gql`
     authorCount: Int!
     allBooks (author: String, genre: String): [Book!]!
     allAuthors: [Author!]!
+    me: User
   }
 
 
@@ -240,9 +266,19 @@ const resolvers = {
           invalidArgs: args,
         })
       }
+    },
+    createUser: async (root, args) => {
+      const hashedPassword = await bcrypt.hash('password12345', 10)
+      const newUser = {...args, passwordHash: hashedPassword} //this is intenttionally hardcoded
+    
+     // console.log(newUser)
+      const newUserObj = User(newUser)
+     // console.log(newUserObj)
+      const response = await newUserObj.save()
+      //console.log({username: response.username, favoriteGenre: response.favoriteGenre, id: response._id})
+      return {username: response.username, favoriteGenre: response.favoriteGenre, id: response._id}
      
-      
-      
+    
     }
   },
   Author: {
