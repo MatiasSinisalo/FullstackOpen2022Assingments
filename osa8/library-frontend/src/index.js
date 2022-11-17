@@ -10,8 +10,10 @@ import {
   } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 
+
+const token = localStorage.getItem('libaryUserToken')
+
 const authHeaderModification = setContext((_, { headers }) => {
-    const token = localStorage.getItem('libaryUserToken')
     let authHeader = null
    
     if(token){
@@ -37,6 +39,6 @@ const authHeaderModification = setContext((_, { headers }) => {
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <ApolloProvider client={client}>
-        <App />
+        <App token={token}/>
     </ApolloProvider>
 )

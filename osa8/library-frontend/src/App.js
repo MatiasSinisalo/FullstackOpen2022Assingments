@@ -5,17 +5,25 @@ import Books from './components/Books'
 import NewBook from './components/NewBook'
 import LoginForm from './components/LogInForm'
 import { useMutation } from '@apollo/client'
-const App = () => {
+const App = (props) => {
   const [page, setPage] = useState('authors')
+  const [loggedIn, setLoggedIn] = useState(false)
   const [login, result] = useMutation(LOGIN)
   useEffect(() => {
     if(result.data){
-      console.log(result.data.login)
-      
       localStorage.setItem('libaryUserToken', result.data.login.value)
+      setLoggedIn(true)
     }
   }, [result.data])
 
+  useEffect(() => {
+    if(props.token){
+      setLoggedIn(true)
+    }
+    else{
+      setLoggedIn(false)
+    }
+  }, [props.token])
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -30,14 +38,19 @@ const App = () => {
     }
   }
 
+  const handleLogout = async(event) => {
+      localStorage.removeItem('libaryUserToken')
+      setLoggedIn(false)
+  }
 
   return (
     <div>
       <div>
         <button onClick={() => setPage('authors')}>authors</button>
         <button onClick={() => setPage('books')}>books</button>
-        <button onClick={() => setPage('add')}>add book</button>
-        <button onClick={() => setPage('login')}>log in</button>
+        {loggedIn ? <button onClick={() => setPage('add')}>add book</button> : <></>}
+        {!loggedIn ? <button onClick={() => setPage('login')}>log in</button> : <button onClick={handleLogout}>log out</button>}
+        
       </div>
 
       <Authors show={page === 'authors'} />
