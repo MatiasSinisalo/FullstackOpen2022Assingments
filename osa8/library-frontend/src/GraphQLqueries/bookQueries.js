@@ -27,6 +27,7 @@ query {
       name
     },
     published
+    genres
   }
 }
 `
