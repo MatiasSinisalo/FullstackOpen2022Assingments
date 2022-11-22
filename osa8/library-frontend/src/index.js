@@ -39,6 +39,6 @@ const authHeaderModification = setContext((_, { headers }) => {
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <ApolloProvider client={client}>
-        <App token={token}/>
+        <App token={token} client={client}/>
     </ApolloProvider>
 )
