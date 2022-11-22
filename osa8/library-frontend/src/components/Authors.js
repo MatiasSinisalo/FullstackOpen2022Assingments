@@ -62,7 +62,7 @@ const Authors = (props) => {
 
   const authors = request.data.allAuthors
 
-  console.log(authors)
+ 
   if (!props.show) {
     return null
   }

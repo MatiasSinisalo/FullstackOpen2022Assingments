@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
-import { LOGIN } from './GraphQLqueries/userQueries'
+import { LOGIN} from './GraphQLqueries/userQueries'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
 import LoginForm from './components/LogInForm'
-import { useMutation } from '@apollo/client'
+import {useMutation} from '@apollo/client'
 import FavoriteGenres from './components/FavoriteGenres'
 
 
@@ -12,7 +12,6 @@ const App = (props) => {
   const [page, setPage] = useState('authors')
   const [loggedIn, setLoggedIn] = useState(false)
   const [login, result] = useMutation(LOGIN)
- 
   useEffect(() => {
     if(result.data){
       localStorage.setItem('libaryUserToken', result.data.login.value)

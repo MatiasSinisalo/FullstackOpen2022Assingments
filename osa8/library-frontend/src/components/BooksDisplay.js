@@ -7,7 +7,6 @@ const BooksDisplay = (props) => {
 
         const bookswithFilter = booksToFilter.filter((book) => {
           if(book.genres){
-            console.log(`${book.genres} to ${filter}`)
              const filteredGenres = book.genres.filter((genre) => genre === filter)
              return filteredGenres.length
           }
@@ -17,7 +16,7 @@ const BooksDisplay = (props) => {
     }
 
     const filteredBooks = filterBooks(props.books, props.filter)
-    console.log(props.filter)
+   
 
     return(
         <>
