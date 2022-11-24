@@ -6,28 +6,28 @@ import BooksDisplay from "./BooksDisplay"
 import { ALL_BOOKS } from "../GraphQLqueries/bookQueries"
 
 const FavoriteGenres = (props) => {
-    const userQuery = useQuery(ME)
     const booksQuery = useQuery(ALL_BOOKS)
-   
-    console.log(userQuery)
-    console.log(booksQuery)
-   
     if(!props.show){
         return null
     }
-    if(userQuery.data.loading || booksQuery.data.loading){
+    if(booksQuery.data.loading){
         return(
             <p>Loading...</p>
         )
     }
-    const userGenre = userQuery.data.me.favoriteGenre
-   
     const books = booksQuery.data.allBooks
-   
+    if(!props.user){
+        return (
+            <>
+                <p>this page is only for logged in users</p>
+            </>
+        )
+    }
+
     return(
         <>
-            <h3>Books in your favorite genre: {userGenre}</h3>
-            <BooksDisplay books={books} filter={userGenre}/>
+            <h3>Books in your favorite genre: { props.user.favoriteGenre}</h3>
+            <BooksDisplay books={books} filter={ props.user.favoriteGenre}/>
         </>
     )
 }
