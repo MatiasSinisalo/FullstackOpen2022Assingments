@@ -1,21 +1,20 @@
-import { ME } from "../GraphQLqueries/userQueries"
-import { useQuery } from "@apollo/client"
-import { useEffect } from "react"
-import Books from "./Books"
+
+import { useApolloClient } from "@apollo/client"
+import { useEffect, useState } from "react"
 import BooksDisplay from "./BooksDisplay"
-import { ALL_BOOKS } from "../GraphQLqueries/bookQueries"
+import {ALL_BOOKS_WITH_GENRE } from "../GraphQLqueries/bookQueries"
 
 const FavoriteGenres = (props) => {
-    const booksQuery = useQuery(ALL_BOOKS)
+   const client = useApolloClient()
+  
+    const [favoriteBooks, setFavoriteBooks] = useState(null)
+   
+    
+
     if(!props.show){
         return null
     }
-    if(booksQuery.data.loading){
-        return(
-            <p>Loading...</p>
-        )
-    }
-    const books = booksQuery.data.allBooks
+
     if(!props.user){
         return (
             <>
@@ -23,13 +22,26 @@ const FavoriteGenres = (props) => {
             </>
         )
     }
-
+    
+    client.query({query: ALL_BOOKS_WITH_GENRE, variables: {genre: props.user.favoriteGenre}}).then((response) => {
+            setFavoriteBooks(response.data.allBooks)
+        } 
+    )
+    
+    if(!favoriteBooks){
+            return(
+                <p>loading ...</p>
+            )
+    }
+   
+    if(favoriteBooks){
     return(
         <>
-            <h3>Books in your favorite genre: { props.user.favoriteGenre}</h3>
-            <BooksDisplay books={books} filter={ props.user.favoriteGenre}/>
+            <h3>Books in your favorite genre: { props.user.favoriteGenre }</h3>
+            <BooksDisplay books={favoriteBooks}/>
         </>
     )
+    }
 }
 
 

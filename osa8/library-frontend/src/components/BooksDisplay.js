@@ -1,51 +1,34 @@
 const BooksDisplay = (props) => {
 
-    const filterBooks = (booksToFilter, filter) => {
-        if(filter === null){
-            return booksToFilter
-        }
-
-        const bookswithFilter = booksToFilter.filter((book) => {
-          if(book.genres){
-             const filteredGenres = book.genres.filter((genre) => genre === filter)
-             return filteredGenres.length
-          }
-          return false
-        })
-        return bookswithFilter
-    }
-
-    const filteredBooks = filterBooks(props.books, props.filter)
-   
-
     return(
         <>
-        <table>
-            <tbody>
-            <tr>
-                <th></th>
-                <th>author</th>
-                <th>published</th>
-            </tr>
+        {
+        props.books.length > 0 ?
             <>
-                {
-                    filteredBooks.length > 0 ?
-                    <>
-                        {filteredBooks.map((a) => (
-                        <tr key={a.title}>
-                            <td>{a.title}</td>
-                            <td>{a.author.name}</td>
-                            <td>{a.published}</td>
-                        </tr>
-                        ))}
-                    </>
-                    :
-                    <p>There are no books with genre: {props.filter}</p>
-                }
+            <table>
+                <tbody>
+                <tr>
+                    <th></th>
+                    <th>author</th>
+                    <th>published</th>
+                </tr>
+                <>
+                    
+                    {props.books.map((a) => (
+                    <tr key={a.title}>
+                        <td>{a.title}</td>
+                        <td>{a.author.name}</td>
+                        <td>{a.published}</td>
+                    </tr>
+                    ))}
+                        
+                </>
+                </tbody>
+            </table>
             </>
-            </tbody>
-        </table>
-        
+         :
+        <p>There are no books with your favorite genre</p>
+        }
       </>
     )
 }

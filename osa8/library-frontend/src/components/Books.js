@@ -1,11 +1,11 @@
-import { gql, useQuery } from '@apollo/client'
+import { gql, useApolloClient, useQuery } from '@apollo/client'
 import { useEffect, useState } from 'react'
-import {ALL_BOOKS} from '../GraphQLqueries/bookQueries'
+import {ALL_BOOKS, ALL_BOOKS_WITH_GENRE} from '../GraphQLqueries/bookQueries'
 import BooksDisplay from './BooksDisplay'
 
 
 const Books = (props) => {
-  
+  const client = useApolloClient()
   //const [books, setBooks] = useState([])
   const [allBooks, setAllBooks] = useState([])
   const [books, setBooks] = useState([])
@@ -23,6 +23,20 @@ const Books = (props) => {
     }
     getBooks()
   }, [bookQuery])
+
+  const filterBooksBy = async (genre) => {
+    if(genre == null){
+      setBooks(allBooks)
+    }
+    else{
+      const booksByGenre = await client.query({query: ALL_BOOKS_WITH_GENRE, variables: {genre}})
+      console.log(booksByGenre)
+      if(booksByGenre.data){
+        setBooks(booksByGenre.data.allBooks)
+      }
+    }
+  }
+
 
   const allGenres = () =>  {
     let genres = {}
@@ -45,15 +59,15 @@ const Books = (props) => {
     <div>
       <h2>books</h2>
 
-        <BooksDisplay books = {books} filter={filter}/>
+        <BooksDisplay books = {books}/>
       
    
         {
           genresList.map((genre) =>
-            <button key={genre} onClick={() => setFilter(genre)}>{genre}</button>
+            <button key={genre} onClick={() => filterBooksBy(genre)}>{genre}</button>
           )
         }
-        <button onClick={() => setFilter(null)}>reset filters</button>
+        <button onClick={() => filterBooksBy(null)}>reset filters</button>
       
 
     </div>
