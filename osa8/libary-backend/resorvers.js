@@ -1,8 +1,11 @@
 const Author = require('./models/author')
 const Book = require('./models/book')
 const User = require('./models/user')
-
-
+const { PubSub } = require('graphql-subscriptions')
+const pubsub = new PubSub()
+const bcrypt = require('bcrypt')
+const jwt = require("jsonwebtoken")
+const { UserInputError } = require('apollo-server-express')
 const resolvers = {
  
     Query: {
@@ -73,8 +76,10 @@ const resolvers = {
         try{
           const bookObj = Book(bookToSave)
           const returnedBook = await bookObj.save()
-          console.log({...bookToSave, id: returnedBook._id})
-          return {...bookToSave, id: returnedBook._id}
+          const bookToReturn = {...bookToSave, id: returnedBook._id}
+          console.log(bookToReturn)
+          pubsub.publish('BOOK_ADDED', { bookAdded: bookToReturn }) 
+          return bookToReturn
         }
         catch(error){
           throw new UserInputError(error.message, {
@@ -143,7 +148,12 @@ const resolvers = {
         throw new UserInputError("Incorrect credentials", {
           invalidArgs: "password or username are invalid",
         })
-      }
+      },
+    },
+    Subscription: {
+        bookAdded: {
+          subscribe: () => pubsub.asyncIterator('BOOK_ADDED')
+        },
     },
     Author: {
       bookCount: async (root) => {
@@ -151,7 +161,8 @@ const resolvers = {
           return books.length
       } 
   
-    }
+    },
+   
   
   }
 
