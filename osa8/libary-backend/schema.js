@@ -63,8 +63,9 @@ type Query {
   me: User
 }
 
-
-
+type Subscription {
+    bookAdded: Book!
+}
 `
 
 module.exports = typeDefs
