@@ -137,6 +137,7 @@ const start = async () => {
   })
   const serverCleanup = useServer({ schema }, wsServer)
 
+ 
 
   const server = new ApolloServer({
     schema,
@@ -174,6 +175,7 @@ const start = async () => {
 
   await server.start()
 
+ 
   server.applyMiddleware({
     app,
     path: '/',

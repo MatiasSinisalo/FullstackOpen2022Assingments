@@ -6,6 +6,55 @@ const pubsub = new PubSub()
 const bcrypt = require('bcrypt')
 const jwt = require("jsonwebtoken")
 const { UserInputError } = require('apollo-server-express')
+
+
+const createNewAuthor = async (authorName) => {
+  const newAuthor = {
+    name: authorName,
+    born: null,
+    bookCount: 0
+  }
+ 
+  try{
+    const authorObj = Author(newAuthor)
+    const savedAuthor = await authorObj.save()
+    return savedAuthor
+  }
+  catch(error){
+    throw new UserInputError(error.message, {
+      invalidArgs: args,
+    })
+  }
+}
+
+const updateAuthorBookCount = async (authorId, newCount) => {
+   //update the author
+   const updatedAuthor = await Author.findByIdAndUpdate(authorId, {bookCount: newCount}, {new: true})
+   return updatedAuthor
+}
+
+const saveBook = async (book, booksAuthor) => {
+  const bookToSave = {...book, author: booksAuthor}
+  console.log(bookToSave)
+ 
+ 
+  try{
+    const bookObj = Book(bookToSave)
+    const returnedBook = await bookObj.save()
+    const bookToReturn = {...bookToSave, id: returnedBook._id}
+    console.log(bookToReturn)
+
+    pubsub.publish('BOOK_ADDED', { bookAdded: bookToReturn }) 
+    return bookToReturn
+  }
+  catch(error){
+    throw new UserInputError(error.message, {
+      invalidArgs: args,
+    })
+  }
+}
+
+
 const resolvers = {
  
     Query: {
@@ -18,6 +67,7 @@ const resolvers = {
         return books.length
       },
       allBooks: async (root, args) => {
+          
           const books = await Book.find({}).populate('author')
           const booksByAuthor = args.author !== undefined ? books.filter((book) => book.author.name === args.author) : books
           const booksByGenre = args.genre !== undefined ? booksByAuthor.filter((book) => book.genres.filter((genre) => genre === args.genre).length > 0) : booksByAuthor
@@ -43,49 +93,20 @@ const resolvers = {
   
         const book = {...args}
         let author = await Author.findOne({name: book.author})//authors.filter((author) => author.name === book.author)
-      
+        console.log(author)
         if(author === null){
-          const newAuthor = {
-            name: book.author,
-            born: null,
-          
-          }
-         
-         
-          try{
-            const authorObj = Author(newAuthor)
-            const savedAuthor = await authorObj.save()
-            author = {
-              name: savedAuthor.name,
-              born: savedAuthor.born,
-              id: savedAuthor._id, //id is needed if the request wants the id back from create book query
-              _id: savedAuthor.id //_id is needed for the bookToSave.save() to have the correct ref to author
-            }
-          }
-          catch(error){
-            throw new UserInputError(error.message, {
-              invalidArgs: args,
-            })
-          }
-          
+          const newAuthor = await createNewAuthor(book.author)
+          const savedBook = await saveBook(book, newAuthor)
+          return savedBook
+        }
+        else{
+          const updatedAuthor = await updateAuthorBookCount(author.id, author.bookCount + 1)
+          const savedBook = await saveBook(book, updatedAuthor)
+          return savedBook
         }
         
-        const bookToSave = {...book, author: author}
-        console.log(bookToSave)
+
        
-        try{
-          const bookObj = Book(bookToSave)
-          const returnedBook = await bookObj.save()
-          const bookToReturn = {...bookToSave, id: returnedBook._id}
-          console.log(bookToReturn)
-          pubsub.publish('BOOK_ADDED', { bookAdded: bookToReturn }) 
-          return bookToReturn
-        }
-        catch(error){
-          throw new UserInputError(error.message, {
-            invalidArgs: args,
-          })
-        }
       },
       editAuthor: async (root, args, context) => {
         const author =  await Author.findOne({name: args.name})
@@ -156,11 +177,15 @@ const resolvers = {
         },
     },
     Author: {
+      /*
+      this is code for tasks before 8.26, in task 8.26 we update authors bookcount each time a new book is added and
+      there's no need to query the books of the author
+
       bookCount: async (root) => {
           const books = await Book.find({author: root.id})
           return books.length
       } 
-  
+      */
     },
    
   
