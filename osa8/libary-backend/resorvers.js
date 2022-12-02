@@ -6,9 +6,9 @@ const pubsub = new PubSub()
 const bcrypt = require('bcrypt')
 const jwt = require("jsonwebtoken")
 const { UserInputError } = require('apollo-server-express')
+const { mongoose } = require('mongoose')
 
-
-const createNewAuthor = async (authorName) => {
+const createNewAuthor = async (authorName, session) => {
   const newAuthor = {
     name: authorName,
     born: null,
@@ -17,24 +17,25 @@ const createNewAuthor = async (authorName) => {
  
  
   const authorObj = Author(newAuthor)
-  const savedAuthor = await authorObj.save()
+  const savedAuthor = await authorObj.save({session})
   return savedAuthor
   
   
 }
 
-const updateAuthorBookCount = async (authorId, newCount) => {
+const updateAuthorBookCount = async (authorId, newCount, currentSession) => {
    //update the author
-   const updatedAuthor = await Author.findByIdAndUpdate(authorId, {bookCount: newCount}, {new: true})
+   const updatedAuthor = await Author.findByIdAndUpdate(authorId, {bookCount: newCount}, {new: true, session: currentSession})
+   console.log("test")
    return updatedAuthor
 }
 
-const saveBook = async (book, booksAuthor) => {
+const saveBook = async (book, booksAuthor, session) => {
   const bookToSave = {...book, author: booksAuthor}
   console.log(bookToSave)
  
   const bookObj = Book(bookToSave)
-  const returnedBook = await bookObj.save()
+  const returnedBook = await bookObj.save({session})
   const bookToReturn = {...bookToSave, id: returnedBook._id}
   console.log(bookToReturn)
 
@@ -84,13 +85,24 @@ const resolvers = {
         const book = {...args}
         let author = await Author.findOne({name: book.author})//authors.filter((author) => author.name === book.author)
         console.log(author)
+        //if author bookCount is incremented by one and then book creation fails we have incorrect bookcount for the author
+        //in order to prevent that bug, I use transactions : https://mongoosejs.com/docs/transactions.html 
+        const session = await mongoose.startSession()
+        await session.startTransaction()
         if(author === null){
           try{
-            const newAuthor = await createNewAuthor(book.author)
-            const savedBook = await saveBook(book, newAuthor)
+          
+            const newAuthor = await createNewAuthor(book.author, session)
+            const savedBook = await saveBook(book, newAuthor, session)
+           
+            await session.commitTransaction()
+            await session.endSession()
             return savedBook
           }
           catch(error){
+            
+            await session.abortTransaction()
+            await session.endSession()
             throw new UserInputError(error.message, {
               invalidArgs: args,
             })
@@ -98,11 +110,16 @@ const resolvers = {
         }
         else{
           try{
-            const updatedAuthor = await updateAuthorBookCount(author.id, author.bookCount + 1)
-            const savedBook = await saveBook(book, updatedAuthor)
+            const updatedAuthor = await updateAuthorBookCount(author.id, author.bookCount + 1, session)
+            const savedBook = await saveBook(book, updatedAuthor, session)
+            
+            await session.commitTransaction()
+            await session.endSession()
             return savedBook
           }
           catch(error){
+            await session.abortTransaction()
+            await session.endSession()
             throw new UserInputError(error.message, {
               invalidArgs: args,
             })
