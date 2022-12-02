@@ -15,16 +15,12 @@ const createNewAuthor = async (authorName) => {
     bookCount: 1
   }
  
-  try{
-    const authorObj = Author(newAuthor)
-    const savedAuthor = await authorObj.save()
-    return savedAuthor
-  }
-  catch(error){
-    throw new UserInputError(error.message, {
-      invalidArgs: args,
-    })
-  }
+ 
+  const authorObj = Author(newAuthor)
+  const savedAuthor = await authorObj.save()
+  return savedAuthor
+  
+  
 }
 
 const updateAuthorBookCount = async (authorId, newCount) => {
@@ -37,21 +33,15 @@ const saveBook = async (book, booksAuthor) => {
   const bookToSave = {...book, author: booksAuthor}
   console.log(bookToSave)
  
- 
-  try{
-    const bookObj = Book(bookToSave)
-    const returnedBook = await bookObj.save()
-    const bookToReturn = {...bookToSave, id: returnedBook._id}
-    console.log(bookToReturn)
+  const bookObj = Book(bookToSave)
+  const returnedBook = await bookObj.save()
+  const bookToReturn = {...bookToSave, id: returnedBook._id}
+  console.log(bookToReturn)
 
-    pubsub.publish('BOOK_ADDED', { bookAdded: bookToReturn }) 
-    return bookToReturn
-  }
-  catch(error){
-    throw new UserInputError(error.message, {
-      invalidArgs: args,
-    })
-  }
+  pubsub.publish('BOOK_ADDED', { bookAdded: bookToReturn }) 
+  return bookToReturn
+  
+ 
 }
 
 
@@ -95,14 +85,28 @@ const resolvers = {
         let author = await Author.findOne({name: book.author})//authors.filter((author) => author.name === book.author)
         console.log(author)
         if(author === null){
-          const newAuthor = await createNewAuthor(book.author)
-          const savedBook = await saveBook(book, newAuthor)
-          return savedBook
+          try{
+            const newAuthor = await createNewAuthor(book.author)
+            const savedBook = await saveBook(book, newAuthor)
+            return savedBook
+          }
+          catch(error){
+            throw new UserInputError(error.message, {
+              invalidArgs: args,
+            })
+          }
         }
         else{
-          const updatedAuthor = await updateAuthorBookCount(author.id, author.bookCount + 1)
-          const savedBook = await saveBook(book, updatedAuthor)
-          return savedBook
+          try{
+            const updatedAuthor = await updateAuthorBookCount(author.id, author.bookCount + 1)
+            const savedBook = await saveBook(book, updatedAuthor)
+            return savedBook
+          }
+          catch(error){
+            throw new UserInputError(error.message, {
+              invalidArgs: args,
+            })
+          }
         }
         
 
