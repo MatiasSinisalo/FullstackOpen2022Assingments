@@ -7,7 +7,7 @@ import LoginForm from './components/LogInForm'
 import Notification from './components/Notification'
 import {useMutation, useApolloClient, useQuery, useSubscription} from '@apollo/client'
 import FavoriteGenres from './components/FavoriteGenres'
-import { BOOK_ADDED } from './GraphQLqueries/bookQueries'
+import { BOOK_ADDED, ALL_BOOKS } from './GraphQLqueries/bookQueries'
 
 
 const App = (props) => {
@@ -44,8 +44,15 @@ const App = (props) => {
 
   useSubscription(BOOK_ADDED, {
     onData: ({data}) => {
-        console.log(data.data.bookAdded)
-        notifyi("green", `new book with title: ${data.data.bookAdded.title} was added to booklist`)
+        const newBook = data.data.bookAdded
+        console.log(newBook)
+        notifyi("green", `new book with title: ${newBook.title} was added to booklist`)
+
+        client.cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {
+          return {
+            allBooks: allBooks.concat(newBook),
+          }
+        })
     }
   })
 
