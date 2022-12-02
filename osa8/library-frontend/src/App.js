@@ -4,6 +4,7 @@ import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
 import LoginForm from './components/LogInForm'
+import Notification from './components/Notification'
 import {useMutation, useApolloClient, useQuery, useSubscription} from '@apollo/client'
 import FavoriteGenres from './components/FavoriteGenres'
 import { BOOK_ADDED } from './GraphQLqueries/bookQueries'
@@ -17,6 +18,8 @@ const App = (props) => {
   const [token, setToken] = useState(localStorage.getItem('libaryUserToken'))
   const [login, result] = useMutation(LOGIN)
 
+  const [notification, setNotification] = useState({msgStyle: "success", msg: null, show: false, id: null})
+ 
   useEffect(() => {
   async function updateState(){
     if(token){
@@ -42,6 +45,7 @@ const App = (props) => {
   useSubscription(BOOK_ADDED, {
     onData: ({data}) => {
         console.log(data.data.bookAdded)
+        notifyi("green", `new book with title: ${data.data.bookAdded.title} was added to booklist`)
     }
   })
 
@@ -64,6 +68,15 @@ const App = (props) => {
       setPage('authors')
   }
 
+
+  const notifyi = (style, content) => {
+    const notificationId = setTimeout(() => {
+      clearInterval(notification.id)
+      setNotification({msgStyle: style, msg: "", show: false, id: null})
+    }, 5000)
+    setNotification({msgStyle: style, msg: content, show: true, id: notificationId})
+  }
+  
   return (
     <div>
       <div>
@@ -74,7 +87,7 @@ const App = (props) => {
         {!loggedIn ? <button onClick={() => setPage('login')}>log in</button> : <button onClick={handleLogout}>log out</button>}
         
       </div>
-     
+      <Notification msgStyle={notification.msgStyle} msg={notification.msg} show={notification.show}/>
       <Authors show={page === 'authors'} />
 
       <Books show={page === 'books'} />
