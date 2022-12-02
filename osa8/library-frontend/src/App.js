@@ -4,8 +4,9 @@ import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
 import LoginForm from './components/LogInForm'
-import {useMutation, useApolloClient, useQuery} from '@apollo/client'
+import {useMutation, useApolloClient, useQuery, useSubscription} from '@apollo/client'
 import FavoriteGenres from './components/FavoriteGenres'
+import { BOOK_ADDED } from './GraphQLqueries/bookQueries'
 
 
 const App = (props) => {
@@ -38,7 +39,11 @@ const App = (props) => {
     }
   }, [result.data])
 
- 
+  useSubscription(BOOK_ADDED, {
+    onData: ({data}) => {
+        console.log(data.data.bookAdded)
+    }
+  })
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -69,7 +74,7 @@ const App = (props) => {
         {!loggedIn ? <button onClick={() => setPage('login')}>log in</button> : <button onClick={handleLogout}>log out</button>}
         
       </div>
-
+     
       <Authors show={page === 'authors'} />
 
       <Books show={page === 'books'} />
