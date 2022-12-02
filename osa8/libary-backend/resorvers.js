@@ -12,7 +12,7 @@ const createNewAuthor = async (authorName) => {
   const newAuthor = {
     name: authorName,
     born: null,
-    bookCount: 0
+    bookCount: 1
   }
  
   try{
