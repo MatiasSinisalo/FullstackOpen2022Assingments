@@ -38,7 +38,7 @@ const FavoriteGenres = (props) => {
     return(
         <>
             <h3>Books in your favorite genre: { props.user.favoriteGenre }</h3>
-            <BooksDisplay books={favoriteBooks}/>
+            <BooksDisplay books={favoriteBooks} noBooksMsg={`There are no books in genre ${props.user.favoriteGenre}`}/>
         </>
     )
     }

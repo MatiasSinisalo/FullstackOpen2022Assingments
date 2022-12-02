@@ -114,7 +114,7 @@ const App = (props) => {
       <Notification msgStyle={notification.msgStyle} msg={notification.msg} show={notification.show}/>
       <Authors show={page === 'authors'} />
 
-      <Books show={page === 'books'} />
+      <Books show={page === 'books'}/>
 
       <NewBook show={page === 'add'} />
 

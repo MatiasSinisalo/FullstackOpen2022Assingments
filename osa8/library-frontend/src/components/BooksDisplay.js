@@ -1,5 +1,5 @@
 const BooksDisplay = (props) => {
-
+   
     return(
         <>
         {
@@ -27,7 +27,7 @@ const BooksDisplay = (props) => {
             </table>
             </>
          :
-        <p>There are no books with your favorite genre</p>
+        <p>{props.noBooksMsg}</p>
         }
       </>
     )
