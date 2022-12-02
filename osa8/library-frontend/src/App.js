@@ -7,7 +7,7 @@ import LoginForm from './components/LogInForm'
 import Notification from './components/Notification'
 import {useMutation, useApolloClient, useQuery, useSubscription} from '@apollo/client'
 import FavoriteGenres from './components/FavoriteGenres'
-import { BOOK_ADDED, ALL_BOOKS } from './GraphQLqueries/bookQueries'
+import { BOOK_ADDED, ALL_BOOKS, ALL_BOOKS_WITH_GENRE } from './GraphQLqueries/bookQueries'
 import { ALL_AUTHORS } from './GraphQLqueries/authorQueries'
 
 
@@ -16,6 +16,9 @@ const App = (props) => {
   const [page, setPage] = useState('authors')
   const [loggedIn, setLoggedIn] = useState(false)
   const [currentUser, setCurrentUser] = useState(null)
+  const [favoriteBooks, setFavoriteBooks] = useState(null)
+
+
   const [token, setToken] = useState(localStorage.getItem('libaryUserToken'))
   const [login, result] = useMutation(LOGIN)
 
@@ -27,6 +30,10 @@ const App = (props) => {
       setLoggedIn(true)
       const userQuery = await client.query({query: ME})
       setCurrentUser(userQuery.data.me)
+
+      const usersFavoriteBooks = await client.query({query: ALL_BOOKS_WITH_GENRE, variables: {genre: userQuery.data.me.favoriteGenre}})
+      setFavoriteBooks(usersFavoriteBooks.data.allBooks)
+
     }
     else{
       setLoggedIn(false)
@@ -70,6 +77,15 @@ const App = (props) => {
           }
 
         })
+        const bookIsInUsersFavoriteGenre = newBook.genres.filter((genre) => genre === currentUser.favoriteGenre).length > 0
+        if(bookIsInUsersFavoriteGenre){
+          client.cache.updateQuery({ query: ALL_BOOKS_WITH_GENRE }, ({ allBooks = [] }) => {
+            setFavoriteBooks(allBooks.concat(newBook))
+            return {
+              allBooks: allBooks.concat(newBook),
+            }
+          })
+        }
     }
   })
 
@@ -120,7 +136,7 @@ const App = (props) => {
 
       <LoginForm show={page==="login"} handleLogin={handleLogin}/>
 
-      <FavoriteGenres show={page==='favouriteGenres'} user={currentUser}/>
+      <FavoriteGenres show={page==='favouriteGenres'} user={currentUser} favoriteBooks={favoriteBooks}/>
 
     </div>
   )

@@ -5,12 +5,6 @@ import BooksDisplay from "./BooksDisplay"
 import {ALL_BOOKS_WITH_GENRE } from "../GraphQLqueries/bookQueries"
 
 const FavoriteGenres = (props) => {
-   const client = useApolloClient()
-  
-    const [favoriteBooks, setFavoriteBooks] = useState(null)
-   
-    
-
     if(!props.show){
         return null
     }
@@ -23,25 +17,22 @@ const FavoriteGenres = (props) => {
         )
     }
     
-    client.query({query: ALL_BOOKS_WITH_GENRE, variables: {genre: props.user.favoriteGenre}}).then((response) => {
-            setFavoriteBooks(response.data.allBooks)
-        } 
-    )
+   
     
-    if(!favoriteBooks){
+    if(!props.favoriteBooks){
             return(
                 <p>loading ...</p>
             )
     }
    
-    if(favoriteBooks){
+   
     return(
         <>
             <h3>Books in your favorite genre: { props.user.favoriteGenre }</h3>
-            <BooksDisplay books={favoriteBooks} noBooksMsg={`There are no books in genre ${props.user.favoriteGenre}`}/>
+            <BooksDisplay books={props.favoriteBooks} noBooksMsg={`There are no books in genre ${props.user.favoriteGenre}`}/>
         </>
     )
-    }
+    
 }
 
 
