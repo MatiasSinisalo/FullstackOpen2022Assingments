@@ -52,6 +52,8 @@ export const BOOK_ADDED = gql`
       title,
       author{
         name
+        born
+        bookCount
       },
       published
       genres

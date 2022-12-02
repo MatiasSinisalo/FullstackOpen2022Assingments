@@ -8,6 +8,7 @@ import Notification from './components/Notification'
 import {useMutation, useApolloClient, useQuery, useSubscription} from '@apollo/client'
 import FavoriteGenres from './components/FavoriteGenres'
 import { BOOK_ADDED, ALL_BOOKS } from './GraphQLqueries/bookQueries'
+import { ALL_AUTHORS } from './GraphQLqueries/authorQueries'
 
 
 const App = (props) => {
@@ -52,6 +53,22 @@ const App = (props) => {
           return {
             allBooks: allBooks.concat(newBook),
           }
+        })
+
+        client.cache.updateQuery({ query: ALL_AUTHORS }, ({ allAuthors }) => {
+          const authorExists = allAuthors.find((author) => author.name == newBook.author.name)
+          console.log(authorExists)
+          if(!authorExists){
+            return {
+              allAuthors: allAuthors.concat(newBook.author),
+            }
+          }
+          else{
+            return{
+              allAuthors: allAuthors.map((author) => author.name === newBook.author.name ? newBook.author : author)
+            }
+          }
+
         })
     }
   })
